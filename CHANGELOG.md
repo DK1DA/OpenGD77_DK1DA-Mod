@@ -7,6 +7,12 @@ single running list until the first versioned release.
 
 ## Unreleased
 
+_Nothing yet._
+
+## 0.1.0
+
+First versioned release of OpenGD77_DK1DA-Mod (fork of OpenGD77 R20260131).
+
 ### Features
 
 - **Screen dimming** — optional idle dimming of the backlight to a fraction of

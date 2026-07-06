@@ -29,6 +29,7 @@
 #include "user_interface/menuSystem.h"
 #include "user_interface/uiLocalisation.h"
 #include "user_interface/uiUtilities.h"
+#include "dk1daModVersion.h"
 
 
 enum
@@ -164,7 +165,10 @@ static void displayBuildDetails(bool playVP)
 #if !defined(PLATFORM_GD77S)
 	char versionBuf[SCREEN_LINE_BUFFER_SIZE];
 	const char *radioModel = "OpenGD77_DK1DA-Mod"; // firmware name shown in Firmware Info
+	char modelBuf[SCREEN_LINE_BUFFER_SIZE];
 	char dateTimeBuf[SCREEN_LINE_BUFFER_SIZE];
+
+	snprintf(modelBuf, SCREEN_LINE_BUFFER_SIZE, "%s v%s", radioModel, OPENGD77_DK1DA_MOD_VERSION); // e.g. "OpenGD77_DK1DA-Mod v0.1.0"
 
 	displayClearBuf();
 
@@ -180,12 +184,12 @@ static void displayBuildDetails(bool playVP)
 
 
 #if defined(PLATFORM_RD5R)
-	displayPrintCentered(0, radioModel, FONT_SIZE_3);
+	displayPrintCentered(0, modelBuf, FONT_SIZE_3);
 	displayPrintCentered(10, currentLanguage->built, FONT_SIZE_2);
 	displayPrintCentered(20, dateTimeBuf , FONT_SIZE_2);
 	displayPrintCentered(30, versionBuf, FONT_SIZE_2);
 #else
-	displayPrintCentered(5, radioModel, FONT_SIZE_3);
+	displayPrintCentered(5, modelBuf, FONT_SIZE_3);
 	displayPrintCentered(20, currentLanguage->built, FONT_SIZE_2);
 	displayPrintCentered(30, dateTimeBuf , FONT_SIZE_2);
 	displayPrintCentered(40, versionBuf, FONT_SIZE_2);
@@ -219,7 +223,7 @@ static void displayBuildDetails(bool playVP)
 	{
 		voicePromptsInit();
 		voicePromptsAppendPrompt(PROMPT_SILENCE);
-		voicePromptsAppendString(radioModel); // "OpenGD77_DK1DA-Mod" is a literal, not a language string
+		voicePromptsAppendString(modelBuf); // "OpenGD77_DK1DA-Mod v0.1.0" (literal, not a language string)
 		voicePromptsAppendLanguageString(currentLanguage->built);
 		voicePromptsAppendString(dateTimeBuf);
 		voicePromptsAppendLanguageString(currentLanguage->gitCommit);
