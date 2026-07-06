@@ -123,7 +123,7 @@ typedef uint32_t time_t_custom;     /* date/time in unix secs past 1-Jan-70 */
 #define DISPLAY_Y_POS_BAR                     10
 // Extra gap below the S-meter/label row before the top info strip (contact/TG,
 // CTCSS/DCS, squelch). Tune this one number to adjust the padding.
-#define DISPLAY_MAIN_CONTENT_TOP_PAD           4
+#define DISPLAY_MAIN_CONTENT_TOP_PAD           8
 #define DISPLAY_Y_POS_CONTACT                (16 + 8 + DISPLAY_MAIN_CONTENT_TOP_PAD)
 #define DISPLAY_Y_POS_CONTACT_TX             (34 + DISPLAY_V_OFFSET)
 #define DISPLAY_Y_POS_CONTACT_TX_FRAME       (34 + DISPLAY_V_OFFSET)
