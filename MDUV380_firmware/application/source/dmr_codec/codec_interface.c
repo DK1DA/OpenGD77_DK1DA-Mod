@@ -28,139 +28,70 @@
 
 #include "dmr_codec/codec.h"
 #include "functions/voicePrompts.h"
+#include <stdint.h>
 #include <string.h>
 
 static uint16_t bitbuffer_encode[72];
+
+/*
+ * The AMBE codec entry points live inside the proprietary codec blob that the
+ * firmware loader patches into flash at 0x0807537C. They are Thumb functions,
+ * so a call through a pointer requires bit 0 (the Thumb bit) to be set.
+ *
+ * These used to be called with hand-written inline assembler that did
+ * "BL <absolute address>". Newer GNU toolchains no longer accept a direct
+ * branch to an absolute address (it fails to link), and even where it links the
+ * bare asm (no operands / no clobber list) miscompiles and hard-faults on the
+ * DMR path. Following the official R20260504 rework, the codec is now invoked
+ * through C function pointers instead.
+ *
+ * The parameter lists below reproduce, exactly, the register/stack state the
+ * original assembler set up (AAPCS: args 1-4 -> r0-r3, args 5+ -> stack).
+ */
+typedef void (*ambeDecodeFn_t)(void *waveOut, int n, void *bitBufIn, int a4, int a5, int halfFrame, void *ambeState);
+typedef void (*ambeEncodeFn_t)(void *bitBufOut, int a2, void *waveIn, int n, int a5, int halfFrame, int a7, void *ambeState);
+typedef void (*ambeEncodeEccFn_t)(void *bitBuf0, void *bitBuf1, int a3, void *eccState);
+
+#define AMBE_DECODE_FN      ((ambeDecodeFn_t)(uintptr_t)(AMBE_DECODE | 1u))
+#define AMBE_ENCODE_FN      ((ambeEncodeFn_t)(uintptr_t)(AMBE_ENCODE | 1u))
+#define AMBE_ENCODE_ECC_FN  ((ambeEncodeEccFn_t)(uintptr_t)(AMBE_ENCODE_ECC | 1u))
 
 void codecDecode(uint8_t *indata_ptr, int numbBlocks)
 {
 	uint16_t bitbuffer_decode[49];
 
-
-	register int r0 asm ("r0") __attribute__((unused));
-	register int r1 asm ("r1") __attribute__((unused));
-	register int r2 asm ("r2") __attribute__((unused));
-
-    for (int idx = 0; idx < numbBlocks; idx++)
-    {
+	for (int idx = 0; idx < numbBlocks; idx++)
+	{
 		initFrame(indata_ptr, bitbuffer_decode);
 		indata_ptr += 9;
 
-		soundSetupBuffer();// this just sets currentWaveBuffer but the compiler seems to optimise out the code if I try to do it in this file
-		r2 = (int)bitbuffer_decode;
-		r0 = (int)currentWaveBuffer;
-		r1 = (int)ambebuffer_decode;
-
-		asm volatile (
-			"PUSH {R4-R11}\n"
-			"SUB SP, SP, #0x10\n"
-			"STR R1, [SP, #0x08]\n"
-			"LDR R1, =0\n"
-			"STR R1, [SP, #0x04]\n"
-			"LDR R1, =0\n"
-			"STR R1, [SP, #0x00]\n"
-			"LDR R3, =0\n"
-			"LDR R1, =80\n"
-			"BL " QU(AMBE_DECODE)
-			"ADD SP, SP, #0x10\n"
-			"POP {R4-R11}"
-		);
-
+		// First half-frame
+		soundSetupBuffer();// sets currentWaveBuffer (the decoded-audio output buffer)
+		AMBE_DECODE_FN((void *)currentWaveBuffer, 80, (void *)bitbuffer_decode, 0, 0, 0, (void *)ambebuffer_decode);
 		soundStoreBuffer();
 
-		soundSetupBuffer();// this just sets currentWaveBuffer but the compiler seems to optimise out the code if I try to do it in this file
-		r2 = (int)bitbuffer_decode;
-		r0 = (int)currentWaveBuffer;
-		r1 = (int)ambebuffer_decode;
-
-		asm volatile (
-			"PUSH {R4-R11}\n"
-			"SUB SP, SP, #0x10\n"
-			"STR R1, [SP, #0x08]\n"
-			"LDR R1, =1\n"
-			"STR R1, [SP, #0x04]\n"
-			"LDR R1, =0\n"
-			"STR R1, [SP, #0x00]\n"
-			"LDR R3, =0\n"
-			"LDR R1, =80\n"
-			"BL " QU(AMBE_DECODE)
-			"ADD SP, SP, #0x10\n"
-			"POP {R4-R11}"
-		);
-
+		// Second half-frame
+		soundSetupBuffer();
+		AMBE_DECODE_FN((void *)currentWaveBuffer, 80, (void *)bitbuffer_decode, 0, 0, 1, (void *)ambebuffer_decode);
 		soundStoreBuffer();
-    }
+	}
 }
 
 void codecEncodeBlock(uint8_t *outdata_ptr)
 {
-	register int r0 asm ("r0") __attribute__((unused));
-	register int r1 asm ("r1") __attribute__((unused));
-	register int r2 asm ("r2") __attribute__((unused));
-
 	memset((uint8_t *)outdata_ptr, 0, 9);// fills with zeros
-	memset(bitbuffer_encode, 0, sizeof(bitbuffer_encode));// faster to call memset as it will be compiled as optimised code
+	memset(bitbuffer_encode, 0, sizeof(bitbuffer_encode));
 
+	// First half-frame
+	soundRetrieveBuffer();// sets currentWaveBuffer (the audio input buffer)
+	AMBE_ENCODE_FN((void *)bitbuffer_encode, 0, (void *)currentWaveBuffer, 80, 0x1840, 0, 0x2000, (void *)ambebuffer_encode);
 
-	soundRetrieveBuffer();// gets currentWaveBuffer pointer used as input r2 to the encoder
+	// Second half-frame
+	soundRetrieveBuffer();
+	AMBE_ENCODE_FN((void *)bitbuffer_encode, 0, (void *)currentWaveBuffer, 80, 0x0800, 1, 0x2000, (void *)ambebuffer_encode);
 
-	r0 = (int)bitbuffer_encode;
-	r2 = (int)currentWaveBuffer;//tmp_wavbuffer;
-	r1 = (int)ambebuffer_encode;// seems to be a hard coded (defined) memory address of 0x1FFF6B60. I'm not sure why it has to be hard coded, since its passed as a paramater (register)
-
-	asm volatile (
-		"PUSH {R4-R11}\n"
-		"SUB SP, SP, #0x14\n"
-		"STR R1, [SP, #0x0C]\n"
-		"LDR R1, =0x00002000\n"
-		"STR R1, [SP, #0x08]\n"
-		"LDR R1, =0\n"
-		"STR R1, [SP, #0x04]\n"
-		"LDR R1, =0x00001840\n"
-		"STR R1, [SP, #0x00]\n"
-		"LDR R3, =80\n"
-		"LDR R1, =0\n"
-		"BL " QU(AMBE_ENCODE)
-		"ADD SP, SP, #0x14\n"
-		"POP {R4-R11}"
-	);
-
-	soundRetrieveBuffer();// gets currentWaveBuffer pointer used as input r2 to the encoder
-
-	r0 = (int)bitbuffer_encode;
-	r2 = (int)currentWaveBuffer;//tmp_wavbuffer;
-	r1 = (int)ambebuffer_encode;
-
-	asm volatile (
-		"PUSH {R4-R11}\n"
-		"SUB SP, SP, #0x14\n"
-		"STR R1, [SP, #0x0C]\n"
-		"LDR R1, =0x00002000\n"
-		"STR R1, [SP, #0x08]\n"
-		"LDR R1, =1\n"
-		"STR R1, [SP, #0x04]\n"
-		"LDR R1, =0x00000800\n"
-		"STR R1, [SP, #0x00]\n"
-		"LDR R3, =80\n"
-		"LDR R1, =0\n"
-		"BL " QU(AMBE_ENCODE)
-		"ADD SP, SP, #0x14\n"
-		"POP {R4-R11}"
-	);
-
-	r0 = (int)bitbuffer_encode;
-	r1 = (int)ambebuffer_encode_ecc;
-
-	asm volatile (
-		"PUSH {R4-R11}\n"
-		"SUB SP, SP, #0x14\n"
-		"MOV R3, R1\n"
-		"LDR R2, =0\n"
-		"MOV R1, R0\n"
-		"BL " QU(AMBE_ENCODE_ECC)
-		"ADD SP, SP, #0x14\n"
-		"POP {R4-R11}"
-	);
+	// ECC pass
+	AMBE_ENCODE_ECC_FN((void *)bitbuffer_encode, (void *)bitbuffer_encode, 0, (void *)ambebuffer_encode_ecc);
 
 	for (int i = 0; i < 72; i++)
 	{
