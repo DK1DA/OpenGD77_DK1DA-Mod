@@ -103,6 +103,7 @@ enum
 	DISPLAY_TIME_UTC_OR_LOCAL,
 	DISPLAY_SHOW_DISTANCE,
 	DISPLAY_DMR_LAST_TALKER_ON_SCREEN,
+	DISPLAY_SCREEN_DIM,
 	NUM_DISPLAY_MENU_ITEMS
 };
 
@@ -244,6 +245,14 @@ static void updateScreen(bool isFirstRun)
 				case DISPLAY_MENU_SCREEN_INVERT:
 					leftSide = currentLanguage->display_screen_invert;
 					rightSideConst = settingsIsOptionBitSet(BIT_INVERSE_VIDEO) ? currentLanguage->screen_invert : currentLanguage->screen_normal;
+					break;
+
+				case DISPLAY_SCREEN_DIM:
+					{
+						const char *dimOpts[] = { currentLanguage->off, "100%", "50%", "30%" };
+						leftSide = "Screen Dim";
+						rightSideConst = dimOpts[settingsGetScreenDimLevel()];
+					}
 					break;
 
 #if ! defined(PLATFORM_GD77S)
@@ -600,6 +609,13 @@ static void handleEvent(uiEvent_t *ev)
 					setDisplayInvert(true);
 					break;
 
+				case DISPLAY_SCREEN_DIM:
+					if (settingsGetScreenDimLevel() < (SCREEN_DIM_NUM - 1))
+					{
+						settingsSetScreenDimLevel(settingsGetScreenDimLevel() + 1);
+					}
+					break;
+
 #if ! defined(PLATFORM_GD77S)
 				case DISPLAY_AUTO_NIGHT:
 					if (settingsIsOptionBitSet(BIT_AUTO_NIGHT) == false)
@@ -800,6 +816,13 @@ static void handleEvent(uiEvent_t *ev)
 
 				case DISPLAY_MENU_SCREEN_INVERT:
 					setDisplayInvert(false);
+					break;
+
+				case DISPLAY_SCREEN_DIM:
+					if (settingsGetScreenDimLevel() > SCREEN_DIM_OFF)
+					{
+						settingsSetScreenDimLevel(settingsGetScreenDimLevel() - 1);
+					}
 					break;
 
 #if ! defined(PLATFORM_GD77S)

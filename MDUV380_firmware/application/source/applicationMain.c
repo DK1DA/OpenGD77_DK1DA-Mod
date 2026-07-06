@@ -963,6 +963,13 @@ void applicationMainTask(void)
 			}
 		}
 
+		// Screen dimming: an incoming signal counts as activity, so keep the backlight
+		// at full brightness while receiving (Auto backlight mode + dimming enabled).
+		if (hasSignal && (nonVolatileSettings.backlightMode == BACKLIGHT_MODE_AUTO) && (settingsGetScreenDimLevel() != SCREEN_DIM_OFF))
+		{
+			displayLightTrigger(false);
+		}
+
 		if (!trxTransmissionEnabled && updateLastHeard)
 		{
 			lastHeardListUpdate((uint8_t *)DMR_frame_buffer, false);
@@ -1361,7 +1368,7 @@ void applicationMainTask(void)
 
 			if (menuDataGlobal.lightTimer == 0)
 			{
-				displayEnableBacklight(false, nonVolatileSettings.displayBacklightPercentageOff);
+				displayEnableBacklight(false, displayGetIdleBacklightPercentage());
 			}
 		}
 

@@ -139,7 +139,7 @@ typedef enum
 	BIT_POWEROFF_SUSPEND            = (SETTINGS_BITS_BANK_0 | (1 << 8)),
 #endif
 	BIT_SATELLITE_MANUAL_AUTO       = (SETTINGS_BITS_BANK_0 | (1 << 9)),
-	BIT_UNUSED_1                    = (SETTINGS_BITS_BANK_0 | (1 << 10)),
+	BIT_SCREEN_DIM_0                = (SETTINGS_BITS_BANK_0 | (1 << 10)), // low bit of the 2-bit screen-dim level
 #if defined(PLATFORM_MD9600)
 	BIT_SPEAKER_CLICK_SUPPRESS      = (SETTINGS_BITS_BANK_0 | (1 << 11)),
 #endif
@@ -153,7 +153,7 @@ typedef enum
 	BIT_VISUAL_VOLUME               = (SETTINGS_BITS_BANK_0 | (1 << 18)),
 #endif
 	BIT_SECONDARY_LANGUAGE          = (SETTINGS_BITS_BANK_0 | (1 << 19)),
-	BIT_UNUSED_3                    = (SETTINGS_BITS_BANK_0 | (1 << 20)),
+	BIT_SCREEN_DIM_1                = (SETTINGS_BITS_BANK_0 | (1 << 20)), // high bit of the 2-bit screen-dim level
 	BIT_DISPLAY_CHANNEL_DISTANCE    = (SETTINGS_BITS_BANK_0 | (1 << 21)),
 #if defined(PLATFORM_MD2017)
 	BIT_TRACKBALL_ENABLED           = (SETTINGS_BITS_BANK_0 | (1 << 22)),
@@ -413,6 +413,18 @@ bool settingsIsOptionBitSet(bitfieldOptions_t bit);
 void settingsSetDirty(void);
 void settingsSetVFODirty(void);
 void settingsSaveIfNeeded(bool immediately);
+// Screen dimming: idle backlight as a fraction of the configured brightness.
+typedef enum
+{
+	SCREEN_DIM_OFF = 0,  // feature disabled (use the normal backlight-off level)
+	SCREEN_DIM_100,      // stay at 100% of configured brightness when idle
+	SCREEN_DIM_50,       // dim to 50%
+	SCREEN_DIM_30,       // dim to 30%
+	SCREEN_DIM_NUM
+} screenDimLevel_t;
+uint8_t settingsGetScreenDimLevel(void);
+void settingsSetScreenDimLevel(uint8_t level);
+
 bool settingsSaveSettings(bool includeVFOs);
 bool settingsLoadSettings(bool reset);
 bool settingsRestoreDefaultSettings(void);

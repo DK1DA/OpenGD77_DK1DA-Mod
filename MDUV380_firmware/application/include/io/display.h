@@ -43,6 +43,7 @@ extern uint8_t displayLCD_Type;
 void displayInit(bool isInverted, bool SPIFlashAvailable);
 void displaySetInvertedState(bool isInverted);
 void displayEnableBacklight(bool enable, int displayBacklightPercentageOff);
+int displayGetIdleBacklightPercentage(void);
 bool displayIsBacklightLit(void);
 void displayWriteCmd(uint8_t cmd);
 void displayWriteData(uint8_t val);

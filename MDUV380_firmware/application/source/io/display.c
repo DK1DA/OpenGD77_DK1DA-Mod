@@ -460,3 +460,21 @@ bool displayIsBacklightLit(void)
 {
 	return (gpioGetDisplayBacklightIntensityPercentage() != nonVolatileSettings.displayBacklightPercentageOff);
 }
+
+// Backlight level to use when idle. If screen dimming is enabled (Auto mode only),
+// dim to a fraction of the configured brightness; otherwise use the normal off level.
+int displayGetIdleBacklightPercentage(void)
+{
+	if (nonVolatileSettings.backlightMode == BACKLIGHT_MODE_AUTO)
+	{
+		static const uint8_t dimPercent[SCREEN_DIM_NUM] = { 0, 100, 50, 30 };
+		uint8_t level = settingsGetScreenDimLevel();
+
+		if (level != SCREEN_DIM_OFF)
+		{
+			return ((nonVolatileSettings.displayBacklightPercentage[DAYTIME_CURRENT] * dimPercent[level]) / 100);
+		}
+	}
+
+	return nonVolatileSettings.displayBacklightPercentageOff;
+}
