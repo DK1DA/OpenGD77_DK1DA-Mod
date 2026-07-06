@@ -172,6 +172,9 @@ typedef struct
 
 void menuDisplayTitle(const char *title);
 void menuDisplayEntry(int loopOffset, int focusedItem, const char *entryText, int32_t optStart, themeItem_t fgItem, themeItem_t fgOptItem, themeItem_t bgItem);
+#if defined(HAS_COLOURS)
+void menuSetNextEntryIconByMenuNum(int menuNum); // sets the icon the next menuDisplayEntry() will draw (0/none for menus without an icon)
+#endif
 
 // menuGetMenuOffset() return values
 #define MENU_OFFSET_BEFORE_FIRST_ENTRY -1
