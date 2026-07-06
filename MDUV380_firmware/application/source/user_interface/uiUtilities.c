@@ -2000,10 +2000,7 @@ void uiUtilityRenderHeader(bool isVFODualWatchScanning, bool isVFOSweepScanning,
 				displayPrintCore(MODE_TEXT_X_OFFSET, DISPLAY_Y_POS_HEADER, buffer,
 						(((nonVolatileSettings.hotspotType != HOTSPOT_TYPE_OFF) && (uiDataGlobal.dmrDisabled == false)) ? FONT_SIZE_1_BOLD : FONT_SIZE_1), TEXT_ALIGN_LEFT, isInverted);
 
-				if (audioIsMuted)
-				{
-					displayDrawFastHLine(MODE_TEXT_X_OFFSET, (DISPLAY_Y_POS_HEADER + (FONT_SIZE_1_HEIGHT >> 1)), modePixelLen, !isInverted);
-				}
+				// (mute is shown by the header "M" indicator, not a strike-through)
 			}
 
 			if ((aprsIsTransmittingOnSameQRG == false) && (monitorModeData.isEnabled == false) && (isVFOSweepScanning == false) && (isVFODualWatchScanning == false) &&
@@ -2071,10 +2068,7 @@ void uiUtilityRenderHeader(bool isVFODualWatchScanning, bool isVFOSweepScanning,
 
 						displayPrintCore(MODE_TEXT_X_OFFSET, DISPLAY_Y_POS_HEADER, (isVFODualWatchScanning ? "[DW]" : "DMR"), ((nonVolatileSettings.hotspotType != HOTSPOT_TYPE_OFF) ? FONT_SIZE_1_BOLD : FONT_SIZE_1), TEXT_ALIGN_LEFT, isInverted);
 
-						if (audioIsMuted)
-						{
-							displayDrawFastHLine(MODE_TEXT_X_OFFSET, (DISPLAY_Y_POS_HEADER + (FONT_SIZE_1_HEIGHT >> 1)), (6 * (isVFODualWatchScanning ? 4 : 3)), !isInverted);
-						}
+						// (mute is shown by the header "M" indicator, not a strike-through)
 					}
 
 					if (isVFODualWatchScanning == false)
