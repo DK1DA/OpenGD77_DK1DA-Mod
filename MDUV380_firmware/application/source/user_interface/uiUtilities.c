@@ -2262,62 +2262,119 @@ static void drawHeaderBar(int *barWidth, int16_t barHeight)
 	displayThemeResetToDefault();
 }
 
+// Segmented block S-meter (colour displays): 9 green blocks for S1..S9 (4 dB per
+// S-unit) plus 6 red blocks for S9+10..S9+60 (10 dB per block), drawn with gaps so
+// the header background shows between them. The leading block is partially filled to
+// reflect the exact level.
+#define SMETER_GREEN_BLOCKS   9
+#define SMETER_RED_BLOCKS     6
+#define SMETER_TOTAL_BLOCKS   (SMETER_GREEN_BLOCKS + SMETER_RED_BLOCKS)
+#define SMETER_BLOCK_GAP      2
+#if defined(HAS_COLOURS)
+#define HEADER_BAR_HEIGHT     6
+#else
+#define HEADER_BAR_HEIGHT     4
+#endif
+
+#if defined(HAS_COLOURS)
+// S-meter scale labels drawn below the blocks. Each label is centred under the
+// block whose upper edge corresponds to that level (S1..S9 in the green zone,
+// +20/+40/+60 dB in the red zone).
+static const struct { uint8_t block; const char *text; } smeterLabels[] = {
+	{  0, "S1" }, {  2, "S3" }, {  4, "S5" }, {  6, "S7" }, {  8, "S9" },
+	{ 10, "+20" }, { 12, "+40" }, { 14, "+60" },
+};
+
+// The label row sits just below the bar; blank it (e.g. while transmitting, when
+// the mic level replaces the S-meter and the labels no longer apply).
+static void clearHeaderLabelRow(void)
+{
+	displayThemeApply(THEME_ITEM_FG_HEADER_TEXT, THEME_ITEM_BG_HEADER_TEXT);
+	displayFillRect(0, (DISPLAY_Y_POS_BAR + HEADER_BAR_HEIGHT), DISPLAY_SIZE_X, FONT_SIZE_1_HEIGHT, true);
+	displayThemeResetToDefault();
+}
+#endif
+
 void uiUtilityDrawRSSIBarGraph(void)
 {
 	int rssi = trxGetRSSIdBm(RADIO_DEVICE_PRIMARY);
 
 	if ((rssi > SMETER_S9) && (trxGetMode() == RADIO_MODE_ANALOG))
 	{
-		// In Analog mode, the max RSSI value from the hardware is over S9+60.
-		// So scale this to fit in the last 30% of the display
+		// In Analog mode the hardware RSSI reads well above S9+60, so compress the
+		// over-S9 portion to keep the calibration consistent with the previous meter.
 		rssi = ((rssi - SMETER_S9) / STRONG_SIGNAL_RESCALE) + SMETER_S9;
-
-		// in Digital mode. The maximum signal is around S9+10 dB.
-		// So no scaling is required, as the full scale value is approximately S9+10dB
 	}
 
+#if defined(HAS_COLOURS)
+	// Fractional block position, in 1/100 block units (0 .. SMETER_TOTAL_BLOCKS*100).
+	// S0..S9 spans the 9 green blocks (4 dB per S-unit); S9..S9+60 spans the 6 red
+	// blocks (10 dB per block).
+	int blockPos;
+	if (rssi <= SMETER_S9)
+	{
+		blockPos = ((rssi - SMETER_S0) * 100) / 4;
+	}
+	else
+	{
+		blockPos = (SMETER_GREEN_BLOCKS * 100) + (((rssi - SMETER_S9) * 100) / 10);
+	}
+	blockPos = CLAMP(blockPos, 0, (SMETER_TOTAL_BLOCKS * 100));
 
-	// Scale the entire bar by 2.
-	// Because above S9 the values are scaled to 1/5. This results in the signal below S9 being doubled in scale
-	// Signals above S9 the scales is compressed to 2/5.
+	// Clear the whole bar band so the gaps (and unlit blocks) show the background.
+	displayThemeApply(THEME_ITEM_FG_RSSI_BAR, THEME_ITEM_BG_HEADER_TEXT);
+	displayFillRect(0, DISPLAY_Y_POS_BAR, DISPLAY_SIZE_X, HEADER_BAR_HEIGHT, true);
+
+	for (int i = 0; i < SMETER_TOTAL_BLOCKS; i++)
+	{
+		int fill = blockPos - (i * 100); // 0..100 = how much of this block is lit
+		if (fill <= 0)
+		{
+			continue; // not reached yet: leave as background
+		}
+		if (fill > 100)
+		{
+			fill = 100;
+		}
+
+		int xStart = (i * DISPLAY_SIZE_X) / SMETER_TOTAL_BLOCKS;
+		int xEnd = ((i + 1) * DISPLAY_SIZE_X) / SMETER_TOTAL_BLOCKS;
+		int blockWidth = (xEnd - xStart) - SMETER_BLOCK_GAP;
+		if (blockWidth <= 0)
+		{
+			continue;
+		}
+
+		int fillWidth = (blockWidth * fill) / 100;
+		if (fillWidth <= 0)
+		{
+			continue;
+		}
+
+		displayThemeApply(((i < SMETER_GREEN_BLOCKS) ? THEME_ITEM_FG_RSSI_BAR : THEME_ITEM_FG_RSSI_BAR_S9P), THEME_ITEM_BG_HEADER_TEXT);
+		displayFillRect(xStart, DISPLAY_Y_POS_BAR, fillWidth, HEADER_BAR_HEIGHT, false);
+	}
+
+	// Draw the S-meter scale labels just below the blocks.
+	displayThemeApply(THEME_ITEM_FG_HEADER_TEXT, THEME_ITEM_BG_HEADER_TEXT);
+	for (int l = 0; l < (int)(sizeof(smeterLabels) / sizeof(smeterLabels[0])); l++)
+	{
+		int b = smeterLabels[l].block;
+		int blockCentre = (((b * DISPLAY_SIZE_X) / SMETER_TOTAL_BLOCKS) + (((b + 1) * DISPLAY_SIZE_X) / SMETER_TOTAL_BLOCKS)) / 2;
+		int textWidth = ((int)strlen(smeterLabels[l].text)) * 6; // FONT_SIZE_1 is 6 px wide
+		int textX = CLAMP((blockCentre - (textWidth / 2)), 0, (DISPLAY_SIZE_X - textWidth));
+
+		displayPrintAt(textX, (DISPLAY_Y_POS_BAR + HEADER_BAR_HEIGHT), smeterLabels[l].text, FONT_SIZE_1);
+	}
+
+	displayThemeResetToDefault();
+#else
+	// Monochrome displays: keep the original solid bar.
 	rssi = (rssi - SMETER_S0) * 2;
 
 	int barWidth = ((rssi * rssiMeterHeaderBarNumUnits) / rssiMeterHeaderBarDivider);
 
-	drawHeaderBar(&barWidth, 4);
-
-#if defined(HAS_COLOURS)
-	int xPos = 0;
-
-	if (rssi > SMETER_S9)
-	{
-		xPos = (rssiMeterHeaderBar[9] * 2);
-
-		if (barWidth > xPos)
-		{
-			displayThemeApply(THEME_ITEM_FG_RSSI_BAR_S9P, THEME_ITEM_BG_HEADER_TEXT);
-			displayFillRect(xPos, DISPLAY_Y_POS_BAR, (barWidth - xPos), 4, false);
-			displayThemeResetToDefault();
-		}
-	}
-#endif
-
-#if 0 // Commented for now, maybe an option later.
-	int currentMode = trxGetMode();
-	for (uint8_t i = 1; ((i < 10) && (xPos <= barWidth)); i += 2)
-	{
-		if ((i <= 9) || (currentMode == RADIO_MODE_DIGITAL))
-		{
-			xPos = rssiMeterHeaderBar[i];
-		}
-		else
-		{
-			xPos = ((rssiMeterHeaderBar[i] - rssiMeterHeaderBar[9]) / STRONG_SIGNAL_RESCALE) + rssiMeterHeaderBar[9];
-		}
-		xPos *= 2;
-
-		ucDrawFastVLine(xPos, (DISPLAY_Y_POS_BAR + 1), 2, false);
-	}
+	drawHeaderBar(&barWidth, HEADER_BAR_HEIGHT);
 #endif
 }
 
@@ -2343,13 +2400,19 @@ void uiUtilityDrawFMMicLevelBarGraph(void)
 #endif
 			, DISPLAY_SIZE_X);
 
-	drawHeaderBar(&barWidth, 4);
+	drawHeaderBar(&barWidth, HEADER_BAR_HEIGHT);
+#if defined(HAS_COLOURS)
+	clearHeaderLabelRow();
+#endif
 }
 
 void uiUtilityDrawDMRMicLevelBarGraph(void)
 {
 	int barWidth = ((uint16_t)(sqrt(micAudioSamplesTotal) * 1.5));
-	drawHeaderBar(&barWidth, 4);
+	drawHeaderBar(&barWidth, HEADER_BAR_HEIGHT);
+#if defined(HAS_COLOURS)
+	clearHeaderLabelRow();
+#endif
 }
 
 void setOverrideTGorPC(uint32_t tgOrPc, bool privateCall)
