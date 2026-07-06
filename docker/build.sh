@@ -12,6 +12,9 @@ chmod +x tools/codec_cleaner.Linux
 ( cd application/source/linkerdata && ../../../tools/codec_cleaner.Linux -C )
 
 echo "==> Building firmware"
+# Clean build: obj/ lives on the host mount and would otherwise be reused across
+# toolchain changes, silently relinking stale .o files (e.g. an old GCC build).
+rm -rf build
 mkdir -p build
 cd build
 make -f /work/docker/firmware.mk -j"$(nproc)"

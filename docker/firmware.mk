@@ -21,7 +21,8 @@ TARGET  := OpenMDUV380
 CPU := -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb
 
 # ---- Preprocessor defines -------------------------------------------------
-DEFS := -DUSE_HAL_DRIVER -DSTM32F405xx -DPLATFORM_MDUV380 -DDEBUG
+# NDEBUG + DEBUG mirrors the STM32CubeIDE "MDUV380_FW" release config exactly.
+DEFS := -DUSE_HAL_DRIVER -DSTM32F405xx -DPLATFORM_MDUV380 -DNDEBUG -DDEBUG
 
 # Short git hash if available, otherwise UNKNOWN (matches the .cproject rule).
 GITVERSION := $(shell git -C .. rev-parse --short HEAD 2>/dev/null || echo UNKNOWN)

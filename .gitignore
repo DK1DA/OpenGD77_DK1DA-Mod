@@ -1,3 +1,7 @@
 .DS_Store
 build/
 codec_bin_section_1.bin
+
+# Generated language plugin files + host-side builder binary
+*.gla
+languages_builder
