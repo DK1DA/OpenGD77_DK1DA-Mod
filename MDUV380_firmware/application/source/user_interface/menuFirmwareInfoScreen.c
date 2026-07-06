@@ -46,14 +46,14 @@ enum
 
 static const char *creditTexts[] =
 {
-		"Roger VK3KYY", "Daniel F1RMB", "Kai DG4KLU", "Colin G4EML", "Alex DL4LEX",
-#if defined(PLATFORM_RD5R)
-		"Dzmitry EW1ADG",
-#endif
-		"Jason VK7ZJA (SK)",
+		"Marcus DK1DA",
 		"",
-		"Modified Fork by",
-		"Marcus DK1DA"
+		"----------------",
+		"",
+		"Thanks to the",
+		"original OpenGD77",
+		"authors for",
+		"their great work",
 };
 static const int maxCredits = (sizeof(creditTexts) / sizeof(creditTexts[0]));
 static const int maxCreditsPages = (maxCredits / maxDisplayedCreditsLines) + ((maxCredits % maxDisplayedCreditsLines) == 0 ? 0 : 1);
@@ -163,7 +163,7 @@ static void displayBuildDetails(bool playVP)
 {
 #if !defined(PLATFORM_GD77S)
 	char versionBuf[SCREEN_LINE_BUFFER_SIZE];
-	const char *radioModel = currentLanguage->openGD77;
+	const char *radioModel = "OpenGD77_DK1DA-Mod"; // firmware name shown in Firmware Info
 	char dateTimeBuf[SCREEN_LINE_BUFFER_SIZE];
 
 	displayClearBuf();
@@ -219,7 +219,7 @@ static void displayBuildDetails(bool playVP)
 	{
 		voicePromptsInit();
 		voicePromptsAppendPrompt(PROMPT_SILENCE);
-		voicePromptsAppendLanguageString(radioModel);
+		voicePromptsAppendString(radioModel); // "OpenGD77_DK1DA-Mod" is a literal, not a language string
 		voicePromptsAppendLanguageString(currentLanguage->built);
 		voicePromptsAppendString(dateTimeBuf);
 		voicePromptsAppendLanguageString(currentLanguage->gitCommit);

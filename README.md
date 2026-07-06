@@ -9,6 +9,15 @@ It adds a number of UI and quality-of-life changes on top of OpenGD77 (segmented
 S-meter, 7-segment frequency font, screen dimming, an audio-mute function, menu
 icons, and more). See [`CHANGELOG.md`](CHANGELOG.md) for the full list.
 
+## Supported radios
+
+This first iteration is developed for and **tested only on the TYT MD-UV380 and
+Retevis RT-3S**. No other radios are officially supported at this time.
+
+If you have another radio that OpenGD77 supports (Baofeng DM-1701 / Retevis RT-84,
+MD-9600, MD-380, MD-2017, …) and would like to help test OpenGD77_DK1DA-Mod on it, that would
+be very welcome — please email **Marcus, DK1DA** at <marcus.kida@bearologics.com>.
+
 ## Upstream source
 
 This fork is based on the official OpenGD77 source release **R20260131**

@@ -54,6 +54,11 @@ single running list until the first versioned release.
   documenting the fork and its upstream source; original OpenGD77 README kept as
   `README.OpenGD77.md`. Added `LICENSE.md` reproducing the inherited OpenGD77
   license (modified BSD 3-Clause + non-commercial clause; not GPL-compatible).
+- On-screen branding renamed to **OpenGD77_DK1DA-Mod** (splash screen + Firmware Info name).
+- README notes this iteration is developed/tested only on the **TYT MD-UV380 and
+  Retevis RT-3S**, with a contact for testing on other supported radios.
+- Firmware-info **credits** simplified to "Marcus DK1DA" and a reference to
+  "The original OpenGD77 authors".
 
 ### Misc
 

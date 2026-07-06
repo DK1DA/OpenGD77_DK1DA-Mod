@@ -155,7 +155,7 @@ static void updateScreen(bool isFirstRun)
 	{
 		displayClearBuf();
 
-		displayPrintCentered(8, "OpenGD77", FONT_SIZE_3);
+		displayPrintCentered(8, "OpenGD77_DK1DA-Mod", FONT_SIZE_3);
 		displayPrintCentered((DISPLAY_SIZE_Y / 4) * 2, line1, FONT_SIZE_3);
 		displayPrintCentered((DISPLAY_SIZE_Y / 4) * 3, line2, FONT_SIZE_3);
 	}
