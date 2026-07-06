@@ -121,7 +121,10 @@ typedef uint32_t time_t_custom;     /* date/time in unix secs past 1-Jan-70 */
 #define DISPLAY_Y_POS_MENU_ENTRY_HIGHLIGHT   (32 + DISPLAY_V_OFFSET)
 #endif
 #define DISPLAY_Y_POS_BAR                     10
-#define DISPLAY_Y_POS_CONTACT                (16 + 8)
+// Extra gap below the S-meter/label row before the top info strip (contact/TG,
+// CTCSS/DCS, squelch). Tune this one number to adjust the padding.
+#define DISPLAY_MAIN_CONTENT_TOP_PAD           4
+#define DISPLAY_Y_POS_CONTACT                (16 + 8 + DISPLAY_MAIN_CONTENT_TOP_PAD)
 #define DISPLAY_Y_POS_CONTACT_TX             (34 + DISPLAY_V_OFFSET)
 #define DISPLAY_Y_POS_CONTACT_TX_FRAME       (34 + DISPLAY_V_OFFSET)
 #if defined(PLATFORM_VARIANT_DM1701)
@@ -131,8 +134,8 @@ typedef uint32_t time_t_custom;     /* date/time in unix secs past 1-Jan-70 */
 #endif
 #define DISPLAY_Y_POS_CHANNEL_SECOND_LINE    (48 + 48 - DISPLAY_Y_OFFSET)
 #define DISPLAY_Y_POS_SQUELCH_BAR             16
-#define DISPLAY_Y_POS_CSS_INFO               (16 + 8)
-#define DISPLAY_Y_POS_SQL_INFO               (25 + 8)
+#define DISPLAY_Y_POS_CSS_INFO               (16 + 8 + DISPLAY_MAIN_CONTENT_TOP_PAD)
+#define DISPLAY_Y_POS_SQL_INFO               (25 + 8 + DISPLAY_MAIN_CONTENT_TOP_PAD)
 #define DISPLAY_Y_POS_TX_TIMER                (8 + 16)
 #define DISPLAY_Y_POS_RX_FREQ                (40 + 40)
 #define DISPLAY_Y_POS_TX_FREQ                (48 + 48)
