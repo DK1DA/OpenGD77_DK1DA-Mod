@@ -33,6 +33,7 @@
 #include "user_interface/uiGlobals.h"
 #include "user_interface/menuSystem.h"
 #include "user_interface/uiUtilities.h"
+#include "applicationMain.h" // for lastVolume (volume-knob-at-minimum = effectively muted)
 #include "user_interface/uiLocalisation.h"
 #include "hardware/SPI_Flash.h"
 #include "functions/trx.h"
@@ -1877,7 +1878,8 @@ void uiUtilityRenderHeader(bool isVFODualWatchScanning, bool isVFOSweepScanning,
 	static uint32_t blinkTime = 0;
 	int radioMode = trxGetMode();
 	uint8_t powerLevel = trxGetPowerLevel();
-	bool audioIsMuted = audioAmpIsMuted();
+	// Muted either explicitly (SK2) or by the volume knob turned fully down (-99).
+	bool audioIsMuted = (audioAmpIsMuted() || (lastVolume == -99));
 	bool isPerChannelPower = (currentChannelData->libreDMR_Power != 0x00);
 	bool scanIsActive = (uiDataGlobal.Scan.active || uiDataGlobal.Scan.toneActive);
 	bool batteryIsLow = batteryIsLowWarning();
@@ -2185,7 +2187,7 @@ void uiUtilityRenderHeader(bool isVFODualWatchScanning, bool isVFOSweepScanning,
 #endif
 #endif
 	// Mute indicator: bold "M" just left of the battery indicator.
-	if (audioAmpIsMuted())
+	if (audioIsMuted)
 	{
 		displayThemeApply(THEME_ITEM_FG_HEADER_TEXT, THEME_ITEM_BG_HEADER_TEXT);
 		displayPrintCore((DISPLAY_SIZE_X - 40), DISPLAY_Y_POS_HEADER, "M", FONT_SIZE_1_BOLD, TEXT_ALIGN_LEFT, false);

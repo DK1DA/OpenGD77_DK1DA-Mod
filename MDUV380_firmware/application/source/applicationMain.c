@@ -1438,7 +1438,7 @@ void applicationMainTask(void)
 		{
 			static bool muteFlashActive = false;
 
-			if (audioAmpIsMuted())
+			if (audioAmpIsMuted() || (lastVolume == -99)) // explicit mute or volume knob fully down
 			{
 				bool flashOn = ((ticksGetMillis() % 2000) < 500);
 				LedWrite(LED_GREEN, 0);
