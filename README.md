@@ -22,7 +22,7 @@ Retevis RT-3S**. No other radios are officially supported at this time.
 
 If you have another radio that OpenGD77 supports (Baofeng DM-1701 / Retevis RT-84,
 MD-9600, MD-380, MD-2017, …) and would like to help test OpenGD77_DK1DA-Mod on it, that would
-be very welcome — please email **Marcus, DK1DA** at <marcus.kida@bearologics.com>.
+be very welcome — please email **Marcus, DK1DA** at <qsl@dk1da.de>.
 
 ## Upstream source
 
