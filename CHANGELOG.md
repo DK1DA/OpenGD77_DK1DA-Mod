@@ -48,6 +48,13 @@ single running list until the first versioned release.
   GD-77 loader into the repo.
 - **`TOOLS.md`** documents building, flashing, screenshots and language files.
 
+### Project
+
+- **Renamed the project to OpenGD77_DK1DA-Mod** (fork of OpenGD77). New `README.md`
+  documenting the fork and its upstream source; original OpenGD77 README kept as
+  `README.OpenGD77.md`. Added `LICENSE.md` reproducing the inherited OpenGD77
+  license (modified BSD 3-Clause + non-commercial clause; not GPL-compatible).
+
 ### Misc
 
 - Added **Marcus DK1DA** to the firmware-info credits ("Modified Fork by").
