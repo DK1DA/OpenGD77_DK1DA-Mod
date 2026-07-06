@@ -15,14 +15,24 @@ CC      := $(PREFIX)gcc
 OBJCOPY := $(PREFIX)objcopy
 SIZE    := $(PREFIX)size
 
-TARGET  := OpenMDUV380
+# ---- Platform selection ---------------------------------------------------
+# PLATFORM=MDUV380 (default) -> TYT MD-UV380 / Retevis RT-3S
+# PLATFORM=DM1701           -> Baofeng DM-1701 / Retevis RT-84
+PLATFORM ?= MDUV380
+ifeq ($(PLATFORM),DM1701)
+PLATFORM_DEFS := -DPLATFORM_RT84_DM1701 -DPLATFORM_VARIANT_DM1701
+TARGET        := OpenDM1701
+else
+PLATFORM_DEFS := -DPLATFORM_MDUV380
+TARGET        := OpenMDUV380
+endif
 
 # ---- MCU / FPU ------------------------------------------------------------
 CPU := -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb
 
 # ---- Preprocessor defines -------------------------------------------------
-# NDEBUG + DEBUG mirrors the STM32CubeIDE "MDUV380_FW" release config exactly.
-DEFS := -DUSE_HAL_DRIVER -DSTM32F405xx -DPLATFORM_MDUV380 -DNDEBUG -DDEBUG
+# NDEBUG + DEBUG mirrors the STM32CubeIDE release configs exactly.
+DEFS := -DUSE_HAL_DRIVER -DSTM32F405xx $(PLATFORM_DEFS) -DNDEBUG -DDEBUG
 
 # Short git hash if available, otherwise UNKNOWN (matches the .cproject rule).
 GITVERSION := $(shell git -C .. rev-parse --short HEAD 2>/dev/null || echo UNKNOWN)

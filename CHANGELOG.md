@@ -7,7 +7,9 @@ single running list until the first versioned release.
 
 ## Unreleased
 
-_Nothing yet._
+- **DM-1701 build support** — the Docker build is now parameterized by platform;
+  `./build-firmware.sh DM1701` produces `OpenDM1701.bin` (Baofeng DM-1701 /
+  Retevis RT-84). Not officially tested yet.
 
 ## 0.1.0
 
