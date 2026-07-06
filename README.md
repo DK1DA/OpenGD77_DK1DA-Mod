@@ -9,6 +9,12 @@ It adds a number of UI and quality-of-life changes on top of OpenGD77 (segmented
 S-meter, 7-segment frequency font, screen dimming, an audio-mute function, menu
 icons, and more). See [`CHANGELOG.md`](CHANGELOG.md) for the full list.
 
+## Screenshots
+
+| Segmented S-meter & DMR call | 7-segment frequency display |
+| --- | --- |
+| ![DMR call with the block S-meter](docs/images/screenshot-dmr.png) | ![VFO with the 7-segment frequency font](docs/images/screenshot-vfo.png) |
+
 ## Supported radios
 
 This first iteration is developed for and **tested only on the TYT MD-UV380 and
