@@ -243,6 +243,7 @@ void acceptPrivateCall(uint32_t id, int timeslot);
 bool rebuildVoicePromptOnExtraLongSK1(uiEvent_t *ev);
 bool repeatVoicePromptOnSK1(uiEvent_t *ev);
 bool handleMonitorMode(uiEvent_t *ev);
+void toggleAudioMute(void);
 void uiUtilityDisplayInformation(const char *str, displayInformation_t line, int8_t yOverride);
 void uiUtilityRenderQSODataAndUpdateScreen(void);
 

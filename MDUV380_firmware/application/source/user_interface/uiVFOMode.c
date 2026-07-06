@@ -1161,6 +1161,15 @@ static void handleEvent(uiEvent_t *ev)
 			return;
 		}
 
+		// SK2 short tap toggles audio mute. The DMR TG-set handler above consumes the
+		// tap (and returns) only while a QSO is on screen, so this won't fire then.
+		if (BUTTONCHECK_SHORTUP(ev, BUTTON_SK2) && (BUTTONCHECK_DOWN(ev, BUTTON_SK1) == 0) && (monitorModeData.isEnabled == false))
+		{
+			toggleAudioMute();
+			uiVFOModeUpdateScreen(0);
+			return;
+		}
+
 		if ((uiVFOModeSweepScanning(true) == false) && (monitorModeData.isEnabled == false) && (uiDataGlobal.reverseRepeaterVFO == false) && (BUTTONCHECK_DOWN(ev, BUTTON_SK1) && BUTTONCHECK_DOWN(ev, BUTTON_SK2)))
 		{
 			int prevQSODisp = -1;

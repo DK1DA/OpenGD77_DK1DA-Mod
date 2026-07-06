@@ -1852,6 +1852,14 @@ void uiUtilityRenderQSOData(void)
 	displayThemeResetToDefault();
 }
 
+// Toggle the audio mute (speaker) state. The header shows a mute icon and the LED
+// flashes amber (see the main loop) while muted.
+void toggleAudioMute(void)
+{
+	audioAmpMute(!audioAmpIsMuted());
+	headerRowIsDirty = true; // refresh the header so the mute icon appears/clears
+}
+
 void uiUtilityRenderHeader(bool isVFODualWatchScanning, bool isVFOSweepScanning, bool forceBatteryDisplay)
 {
 	const int MODE_TEXT_X_OFFSET = 1;
@@ -2176,6 +2184,14 @@ void uiUtilityRenderHeader(bool isVFODualWatchScanning, bool isVFOSweepScanning,
 	bool displayTime = (settingsIsOptionBitSet(BIT_DISPLAY_TIME_IN_HEADER) && (forceBatteryDisplay == false) && (batteryIsLow == false));
 #endif
 #endif
+	// Mute indicator: bold "M" just left of the battery indicator.
+	if (audioAmpIsMuted())
+	{
+		displayThemeApply(THEME_ITEM_FG_HEADER_TEXT, THEME_ITEM_BG_HEADER_TEXT);
+		displayPrintCore((DISPLAY_SIZE_X - 40), DISPLAY_Y_POS_HEADER, "M", FONT_SIZE_1_BOLD, TEXT_ALIGN_LEFT, false);
+		displayThemeResetToDefault();
+	}
+
 	// Display battery percentage/voltage
 	bool apoEnabled = (nonVolatileSettings.apo > 0);
 

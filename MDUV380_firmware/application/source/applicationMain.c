@@ -36,6 +36,7 @@
 #include "interfaces/adc.h"
 #include "interfaces/batteryRAM.h"
 #include "hardware/SPI_Flash.h"
+#include "io/Leds.h"
 #include "interfaces/adc.h"
 #include "hardware/radioHardwareInterface.h"
 
@@ -1430,6 +1431,27 @@ void applicationMainTask(void)
 		{
 			volumeIsStillChanging = false;
 			updateVolumeGain(currentMenu);
+		}
+
+		// Mute indicator: while muted, flash the RED LED for 0.5s every 2s.
+		// This overrides the normal RX/TX LED while muted.
+		{
+			static bool muteFlashActive = false;
+
+			if (audioAmpIsMuted())
+			{
+				bool flashOn = ((ticksGetMillis() % 2000) < 500);
+				LedWrite(LED_GREEN, 0);
+				LedWrite(LED_RED, (flashOn ? 1 : 0));
+				muteFlashActive = true;
+			}
+			else if (muteFlashActive)
+			{
+				// Just unmuted: release our forced LED state.
+				LedWrite(LED_RED, 0);
+				LedWrite(LED_GREEN, 0);
+				muteFlashActive = false;
+			}
 		}
 
 		while(ticksGetMillis() < startTime + 1)				// ensure this Task runs at 1ms intervals. Regardless of clock speed.
