@@ -1063,6 +1063,77 @@ void displayFillRect(int16_t x, int16_t y, int16_t width, int16_t height, bool i
 	}
 }
 
+#if defined(HAS_COLOURS)
+// --- 7-segment ("LED") number rendering ------------------------------------
+// Segment bitmask per digit 0-9. Bits: a=0x01 b=0x02 c=0x04 d=0x08 e=0x10 f=0x20 g=0x40
+//
+//    aaa
+//   f   b
+//   f   b
+//    ggg
+//   e   c
+//   e   c
+//    ddd
+static const uint8_t sevenSegDigits[10] =
+{
+	0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F
+};
+
+// Draw one digit's 7 segments inside a w x h cell. Lit segments use litColour,
+// the rest use dimColour, giving the "inactive segments faintly visible" look.
+static void displayDrawSevenSegDigit(int16_t x, int16_t y, int16_t w, int16_t h, uint8_t seg, uint16_t litColour, uint16_t dimColour, uint16_t bgColour)
+{
+	int16_t t = (h > 20) ? 3 : 2;   // segment thickness
+	int16_t midY = y + (h / 2);
+	int16_t vLen = (h / 2) - t;     // vertical segment length
+
+#define SEG_COL(bit) displaySetForegroundAndBackgroundColours((((seg) & (bit)) ? litColour : dimColour), bgColour)
+	SEG_COL(0x01); displayFillRect(x + t,       y,                 w - (2 * t), t,    false); // a  top
+	SEG_COL(0x02); displayFillRect(x + w - t,   y + t,             t,           vLen, false); // b  top-right
+	SEG_COL(0x04); displayFillRect(x + w - t,   midY,              t,           vLen, false); // c  bottom-right
+	SEG_COL(0x08); displayFillRect(x + t,       y + h - t,         w - (2 * t), t,    false); // d  bottom
+	SEG_COL(0x10); displayFillRect(x,           midY,              t,           vLen, false); // e  bottom-left
+	SEG_COL(0x20); displayFillRect(x,           y + t,             t,           vLen, false); // f  top-left
+	SEG_COL(0x40); displayFillRect(x + t,       midY - (t / 2),    w - (2 * t), t,    false); // g  middle
+#undef SEG_COL
+}
+
+// Render a numeric string (digits, '.', spaces) as 7-segment "LED" characters,
+// one cellW-wide cell per character, using the given theme foreground colour lit
+// and a dimmed version of it for the inactive segments.
+void displayDrawFrequencySevenSeg(int16_t x, int16_t y, int16_t cellW, int16_t cellH, const char *str, themeItem_t fgItem)
+{
+	uint16_t litColour = themeItems[DAYTIME_CURRENT][fgItem];
+	uint16_t bgColour = themeItems[DAYTIME_CURRENT][THEME_ITEM_BG];
+
+	// dimColour: same hue at ~3/8 intensity (round-trip through RGB888) so the
+	// inactive segments stay clearly visible without washing out the lit ones.
+	uint32_t rgb = PLATFORM_COLOUR_FORMAT_TO_RGB888(__builtin_bswap16(litColour));
+	uint32_t dimRgb = (((((rgb >> 16) & 0xFF) * 3) / 8) << 16) | (((((rgb >> 8) & 0xFF) * 3) / 8) << 8) | ((((rgb) & 0xFF) * 3) / 8);
+	uint16_t dimColour = __builtin_bswap16(RGB888_TO_PLATFORM_COLOUR_FORMAT(dimRgb));
+
+	for (const char *p = str; *p != '\0'; p++)
+	{
+		if ((*p >= '0') && (*p <= '9'))
+		{
+			displayDrawSevenSegDigit(x, y, (cellW - 1), cellH, sevenSegDigits[*p - '0'], litColour, dimColour, bgColour);
+			x += cellW;
+		}
+		else if (*p == '.')
+		{
+			// The decimal point takes half a cell so the wide digits still fit.
+			displaySetForegroundAndBackgroundColours(litColour, bgColour);
+			displayFillRect((x + 1), (y + cellH - 3), 3, 3, false);
+			x += (cellW / 2);
+		}
+		else
+		{
+			x += cellW;
+		}
+	}
+}
+#endif // HAS_COLOURS
+
 /*
  *
  */

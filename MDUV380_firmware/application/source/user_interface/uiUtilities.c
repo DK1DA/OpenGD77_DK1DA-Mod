@@ -2504,7 +2504,14 @@ void uiUtilityDisplayFrequency(uint8_t y, bool isTX, bool hasFocus, uint32_t fre
 
 	// Frequency
 	snprintf(buffer, SCREEN_LINE_BUFFER_SIZE, "%d.%05d", val_before_dp, val_after_dp);
+#if defined(HAS_COLOURS)
+	// 7-segment "LED" style with faint inactive segments. Digits are wider than the
+	// normal font (12 px cells) to fill the space up to the "MHz" label.
+	displayDrawFrequencySevenSeg(FREQUENCY_X_POS, yFont3, 12, (displayFocusAndDblHeight ? (FONT_SIZE_3_HEIGHT * 2) : FONT_SIZE_3_HEIGHT),
+			buffer, (isTX ? THEME_ITEM_FG_TX_FREQ : THEME_ITEM_FG_RX_FREQ));
+#else
 	displayPrintAtDoubleHeight(FREQUENCY_X_POS, yFont3, buffer, FONT_SIZE_3, displayFocusAndDblHeight);
+#endif
 	displayPrintAtDoubleHeight(DISPLAY_SIZE_X - (3 * 8), yFont3, "MHz", FONT_SIZE_3, displayFocusAndDblHeight);
 
 	displayThemeResetToDefault();

@@ -264,6 +264,11 @@ void displaySetForegroundAndBackgroundColours(uint16_t fgColour, uint16_t bgColo
 void displayGetForegroundAndBackgroundColours(uint16_t *fgColour, uint16_t *bgColour);
 
 #if defined(HAS_COLOURS)
+// Render a numeric string as 7-segment "LED" digits with dimmed inactive segments.
+void displayDrawFrequencySevenSeg(int16_t x, int16_t y, int16_t cellW, int16_t cellH, const char *str, themeItem_t fgItem);
+#endif
+
+#if defined(HAS_COLOURS)
 void themeInitToDefaultValues(DayTime_t daytime, bool invert);
 void themeInit(bool SPIFlashAvailable);
 void displayThemeApply(themeItem_t fgItem, themeItem_t bgItem);
