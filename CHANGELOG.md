@@ -7,6 +7,9 @@ single running list until the first versioned release.
 
 ## Unreleased
 
+- **7-segment frequency font:** inactive segments are now off (background) instead
+  of faintly lit — no dim "ghosting". "MHz" now matches the frequency colour, and
+  there's 1px more space between the RX and TX frequency lines.
 - **Screen dimming:** added a **15%** idle-dim level (Off / 100 / 50 / 30 / 15).
 - **DM-1701 build support** — the Docker build is now parameterized by platform;
   `./build-firmware.sh DM1701` produces `OpenDM1701.bin` (Baofeng DM-1701 /

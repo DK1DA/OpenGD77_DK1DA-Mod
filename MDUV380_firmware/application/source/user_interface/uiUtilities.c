@@ -2524,6 +2524,9 @@ void uiUtilityDisplayFrequency(uint8_t y, bool isTX, bool hasFocus, uint32_t fre
 #else
 	displayPrintAtDoubleHeight(FREQUENCY_X_POS, yFont3, buffer, FONT_SIZE_3, displayFocusAndDblHeight);
 #endif
+	// Re-apply the frequency colour: the 7-segment renderer leaves the foreground
+	// set to the last segment drawn, so "MHz" would otherwise use the wrong colour.
+	displayThemeApply(isTX ? THEME_ITEM_FG_TX_FREQ : THEME_ITEM_FG_RX_FREQ, THEME_ITEM_BG);
 	displayPrintAtDoubleHeight(DISPLAY_SIZE_X - (3 * 8), yFont3, "MHz", FONT_SIZE_3, displayFocusAndDblHeight);
 
 	displayThemeResetToDefault();

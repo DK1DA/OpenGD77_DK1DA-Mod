@@ -1106,11 +1106,9 @@ void displayDrawFrequencySevenSeg(int16_t x, int16_t y, int16_t cellW, int16_t c
 	uint16_t litColour = themeItems[DAYTIME_CURRENT][fgItem];
 	uint16_t bgColour = themeItems[DAYTIME_CURRENT][THEME_ITEM_BG];
 
-	// dimColour: same hue at ~3/8 intensity (round-trip through RGB888) so the
-	// inactive segments stay clearly visible without washing out the lit ones.
-	uint32_t rgb = PLATFORM_COLOUR_FORMAT_TO_RGB888(__builtin_bswap16(litColour));
-	uint32_t dimRgb = (((((rgb >> 16) & 0xFF) * 3) / 8) << 16) | (((((rgb >> 8) & 0xFF) * 3) / 8) << 8) | ((((rgb) & 0xFF) * 3) / 8);
-	uint16_t dimColour = __builtin_bswap16(RGB888_TO_PLATFORM_COLOUR_FORMAT(dimRgb));
+	// Inactive segments are drawn in the background colour (i.e. off), so only the
+	// lit segments show (no dim "ghosting").
+	uint16_t dimColour = bgColour;
 
 	for (const char *p = str; *p != '\0'; p++)
 	{
