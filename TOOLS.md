@@ -26,11 +26,13 @@ the official OpenGD77 firmware uses. (Ubuntu's stock GCC 10 miscompiles the DMR 
 path; see the git history.)
 
 ```bash
-./build-firmware.sh
+./build-firmware.sh            # MD-UV380 / RT-3S  -> build/OpenMDUV380.bin  (default)
+./build-firmware.sh DM1701     # DM-1701 / RT-84   -> build/OpenDM1701.bin
 ```
 
-Output: `MDUV380_firmware/build/OpenMDUV380.bin` (the flashable, FM-only image; the DMR
-codec is merged in at flash time — see below). The build is always clean (`rm -rf build`).
+Output: `MDUV380_firmware/build/Open<platform>.bin` (the flashable, FM-only image; the DMR
+codec is merged in at flash time — see below). The build is always clean (`rm -rf build`),
+so building one platform overwrites the other's output.
 
 ---
 

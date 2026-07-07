@@ -15,6 +15,29 @@ icons, and more). See [`CHANGELOG.md`](CHANGELOG.md) for the full list.
 | --- | --- |
 | ![DMR call with the block S-meter](docs/images/screenshot-dmr.png) | ![VFO with the 7-segment frequency font](docs/images/screenshot-vfo.png) |
 
+## What's different from OpenGD77
+
+OpenGD77_DK1DA-Mod keeps OpenGD77's core (DMR/FM, hotspot, CPS compatibility) and adds:
+
+- **Audio mute — new SK2 short-tap.** A short tap of **SK2** on the VFO/Channel
+  screen toggles the speaker mute on and off. Turning the **volume knob fully
+  down** counts as muted too. While muted, a bold **"M"** appears in the status
+  bar (left of the battery) and the **red LED flashes** (0.5 s every 2 s). SK2's
+  existing roles are unchanged: held as a modifier, extra-long-press for
+  monitor/squelch-off, and — while a DMR QSO is on screen — a tap still sets the
+  TX talkgroup to the incoming one.
+- **Segmented block S-meter** with one block per S-level (S1–S9 green, S9+ red)
+  and a scale label row (S1 S3 S5 S7 S9 / +20 +40 +60).
+- **7-segment "LED" frequency font** with faintly-lit inactive segments, on the
+  VFO and the SK1-held frequency view.
+- **Screen dimming** — optionally dim the backlight to 100 / 50 / 30 % after
+  inactivity (Auto backlight mode); new setting in Display Options.
+- **Main-menu icons** next to each top-level entry.
+- **DMR reliability fix** — resolves a hard-fault (freeze needing a battery pull)
+  on the DMR path that affected recent self-built OpenGD77 revisions.
+
+See [`CHANGELOG.md`](CHANGELOG.md) for the complete list.
+
 ## Supported radios
 
 This first iteration is developed for and **tested only on the TYT MD-UV380 and
@@ -40,10 +63,35 @@ As with OpenGD77, the source does **not** contain the AMBE codec required for DM
 audio. It is merged in from an official manufacturer firmware (V26.45) at flash
 time by the firmware loader. See [`TOOLS.md`](TOOLS.md).
 
-## Building, flashing & tools
+## Flashing
 
-See [`TOOLS.md`](TOOLS.md) for building (Docker + Arm GNU Toolchain 14), flashing
-(`./flash.sh`), grabbing screenshots, and building language files.
+Pre-built firmware is attached to each
+[release](https://git.dk1da.de/DK1DA/OpenGD77_DK1DA-Mod/releases): `OpenMDUV380.bin` for the
+MD-UV380 / RT-3S, `OpenDM1701.bin` for the DM-1701 / RT-84. (Or build your own —
+see below.)
+
+1. **Enter firmware-update (DFU) mode:** power the radio **off**, then power it
+   **on while holding PTT + SK1** (the button above PTT). The screen stays blank
+   and the top LED glows steadily. Connect the USB cable.
+2. **Flash** with the helper (it applies the DMR codec donor and, optionally, a
+   secondary language):
+   ```bash
+   ./flash.sh -m MD-UV380 -f MDUV380_firmware/build/OpenMDUV380.bin
+   # DM-1701 / RT-84:
+   ./flash.sh -m DM-1701  -f MDUV380_firmware/build/OpenDM1701.bin
+   ```
+
+**DMR note:** the firmware image is FM-only until the **AMBE codec donor** (the
+official V26.45 manufacturer firmware) is merged in at flash time. Register it
+once with `./flash.sh -s /path/to/official_V26.45.bin`; the path is then
+remembered. Full options, the DFU device list and the underlying loader are
+documented in [`TOOLS.md`](TOOLS.md).
+
+## Building & tools
+
+See [`TOOLS.md`](TOOLS.md) for building in Docker
+(`./build-firmware.sh [MDUV380|DM1701]`, Arm GNU Toolchain 14), grabbing
+screenshots, and building language files.
 
 ## License
 

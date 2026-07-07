@@ -10,6 +10,10 @@ single running list until the first versioned release.
 - **DM-1701 build support** — the Docker build is now parameterized by platform;
   `./build-firmware.sh DM1701` produces `OpenDM1701.bin` (Baofeng DM-1701 /
   Retevis RT-84). Not officially tested yet.
+- **Release script** (`scripts/forgejo-release.sh`) now builds and attaches a
+  single platform or all of them, and reuses an existing release.
+- README: added "What's different from OpenGD77" and a dedicated "Flashing"
+  section.
 
 ## 0.1.0
 
