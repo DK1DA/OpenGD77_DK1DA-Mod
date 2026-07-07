@@ -129,7 +129,7 @@ typedef enum
 {
 	BIT_INVERSE_VIDEO               = (SETTINGS_BITS_BANK_0 | (1 << 0)),
 	BIT_PTT_LATCH                   = (SETTINGS_BITS_BANK_0 | (1 << 1)),
-	BIT_SCREEN_DIM_2                = (SETTINGS_BITS_BANK_0 | (1 << 2)), // high bit of the 3-bit screen-dim level
+	BIT_UNUSED_2                    = (SETTINGS_BITS_BANK_0 | (1 << 2)),
 	BIT_BATTERY_VOLTAGE_IN_HEADER   = (SETTINGS_BITS_BANK_0 | (1 << 3)),
 	BIT_SETTINGS_UPDATED            = (SETTINGS_BITS_BANK_0 | (1 << 4)),
 	BIT_TX_RX_FREQ_LOCK             = (SETTINGS_BITS_BANK_0 | (1 << 5)),
@@ -154,6 +154,7 @@ typedef enum
 #endif
 	BIT_SECONDARY_LANGUAGE          = (SETTINGS_BITS_BANK_0 | (1 << 19)),
 	BIT_SCREEN_DIM_1                = (SETTINGS_BITS_BANK_0 | (1 << 20)), // middle bit of the 3-bit screen-dim level
+	BIT_SCREEN_DIM_2                = (SETTINGS_BITS_BANK_0 | (1 << 29)), // high bit of the 3-bit screen-dim level (kept off low legacy bits)
 	BIT_DISPLAY_CHANNEL_DISTANCE    = (SETTINGS_BITS_BANK_0 | (1 << 21)),
 #if defined(PLATFORM_MD2017)
 	BIT_TRACKBALL_ENABLED           = (SETTINGS_BITS_BANK_0 | (1 << 22)),

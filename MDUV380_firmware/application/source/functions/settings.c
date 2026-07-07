@@ -607,7 +607,9 @@ bool settingsIsOptionBitSet(bitfieldOptions_t bit)
 // no new settings field (existing codeplugs keep both bits clear = SCREEN_DIM_OFF).
 uint8_t settingsGetScreenDimLevel(void)
 {
-	return (settingsIsOptionBitSet(BIT_SCREEN_DIM_0) ? 1 : 0) | (settingsIsOptionBitSet(BIT_SCREEN_DIM_1) ? 2 : 0) | (settingsIsOptionBitSet(BIT_SCREEN_DIM_2) ? 4 : 0);
+	uint8_t level = (settingsIsOptionBitSet(BIT_SCREEN_DIM_0) ? 1 : 0) | (settingsIsOptionBitSet(BIT_SCREEN_DIM_1) ? 2 : 0) | (settingsIsOptionBitSet(BIT_SCREEN_DIM_2) ? 4 : 0);
+	// Never return an out-of-range level: dimOpts[]/dimPercent[] are SCREEN_DIM_NUM long.
+	return (level < SCREEN_DIM_NUM) ? level : SCREEN_DIM_OFF;
 }
 
 void settingsSetScreenDimLevel(uint8_t level)

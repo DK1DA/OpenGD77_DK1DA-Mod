@@ -7,6 +7,17 @@ single running list until the first versioned release.
 
 ## Unreleased
 
+_Nothing yet._
+
+## 0.2.0
+
+- **Fix crash** opening Display Options with **voice announcements on**: the Screen
+  Dim value ("100%"/"50%"/…) is a plain literal, but the shared menu code fed it to
+  `voicePromptsAppendLanguageString()`, which derives the prompt index from the
+  string's offset within the language table — a foreign pointer produced a garbage
+  index and crashed. The value now goes through `voicePromptsAppendString()`. Also
+  moved the dim-level high bit off a low legacy option bit (bit 2 → 29) and clamped
+  the level so it can never index past the option arrays.
 - **7-segment frequency font:** inactive segments are now off (background) instead
   of faintly lit — no dim "ghosting". "MHz" now matches the frequency colour, and
   there's 1px more space between the RX and TX frequency lines.

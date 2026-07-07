@@ -249,9 +249,23 @@ static void updateScreen(bool isFirstRun)
 
 				case DISPLAY_SCREEN_DIM:
 					{
-						const char *dimOpts[] = { currentLanguage->off, "100%", "50%", "30%", "15%" };
+						// The "%" values are plain string literals, not currentLanguage entries,
+						// so they must go through rightSideVar -> voicePromptsAppendString().
+						// Passing them to voicePromptsAppendLanguageString() (as the shared code
+						// does for rightSideConst) would treat the pointer as an offset into the
+						// language table and crash when voice prompts are enabled. "Off" is a real
+						// language string, so it can stay in rightSideConst.
+						const char *dimOpts[] = { NULL, "100%", "50%", "30%", "15%" };
+						uint8_t dimLevel = settingsGetScreenDimLevel();
 						leftSide = "Screen Dim";
-						rightSideConst = dimOpts[settingsGetScreenDimLevel()];
+						if (dimLevel == SCREEN_DIM_OFF)
+						{
+							rightSideConst = currentLanguage->off;
+						}
+						else
+						{
+							snprintf(rightSideVar, SCREEN_LINE_BUFFER_SIZE, "%s", dimOpts[dimLevel]);
+						}
 					}
 					break;
 
