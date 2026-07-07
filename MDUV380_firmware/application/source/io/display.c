@@ -467,7 +467,7 @@ int displayGetIdleBacklightPercentage(void)
 {
 	if (nonVolatileSettings.backlightMode == BACKLIGHT_MODE_AUTO)
 	{
-		static const uint8_t dimPercent[SCREEN_DIM_NUM] = { 0, 100, 50, 30 };
+		static const uint8_t dimPercent[SCREEN_DIM_NUM] = { 0, 100, 50, 30, 15 };
 		uint8_t level = settingsGetScreenDimLevel();
 
 		if (level != SCREEN_DIM_OFF)

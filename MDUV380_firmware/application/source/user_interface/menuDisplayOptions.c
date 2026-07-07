@@ -249,7 +249,7 @@ static void updateScreen(bool isFirstRun)
 
 				case DISPLAY_SCREEN_DIM:
 					{
-						const char *dimOpts[] = { currentLanguage->off, "100%", "50%", "30%" };
+						const char *dimOpts[] = { currentLanguage->off, "100%", "50%", "30%", "15%" };
 						leftSide = "Screen Dim";
 						rightSideConst = dimOpts[settingsGetScreenDimLevel()];
 					}

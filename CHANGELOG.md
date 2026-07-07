@@ -7,6 +7,7 @@ single running list until the first versioned release.
 
 ## Unreleased
 
+- **Screen dimming:** added a **15%** idle-dim level (Off / 100 / 50 / 30 / 15).
 - **DM-1701 build support** — the Docker build is now parameterized by platform;
   `./build-firmware.sh DM1701` produces `OpenDM1701.bin` (Baofeng DM-1701 /
   Retevis RT-84). Not officially tested yet.
