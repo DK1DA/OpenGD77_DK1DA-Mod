@@ -53,12 +53,18 @@ try:
     d=json.load(sys.stdin); print(d.get("id","") if isinstance(d,dict) else "")
 except Exception:
     print("")')"
+# Everything before v1.0.0 is flagged as a pre-release.
+if [ "${VER%%.*}" = "0" ]; then PRERELEASE=true; else PRERELEASE=false; fi
+
 if [ -z "$ID" ]; then
-	BODY="$(python3 -c 'import json,sys; print(json.dumps({"tag_name":sys.argv[1],"name":"OpenGD77_DK1DA-Mod "+sys.argv[1],"body":sys.argv[2],"draft":False,"prerelease":False}))' "$TAG" "$NOTES")"
+	BODY="$(python3 -c 'import json,sys; print(json.dumps({"tag_name":sys.argv[1],"name":"OpenGD77_DK1DA-Mod "+sys.argv[1],"body":sys.argv[2],"draft":False,"prerelease":(sys.argv[3]=="true")}))' "$TAG" "$NOTES" "$PRERELEASE")"
 	ID="$(curl -fsS -X POST "$API/releases" -H "Authorization: token $FORGEJO_TOKEN" -H "Content-Type: application/json" -d "$BODY" | python3 -c 'import json,sys;print(json.load(sys.stdin)["id"])')"
-	echo "==> Created release $TAG (id=$ID)"
+	echo "==> Created release $TAG (id=$ID, prerelease=$PRERELEASE)"
 else
-	echo "==> Reusing existing release $TAG (id=$ID)"
+	# Keep the pre-release flag correct on re-runs.
+	curl -fsS -X PATCH "$API/releases/$ID" -H "Authorization: token $FORGEJO_TOKEN" -H "Content-Type: application/json" \
+		-d "$(python3 -c 'import json,sys; print(json.dumps({"prerelease":(sys.argv[1]=="true")}))' "$PRERELEASE")" >/dev/null
+	echo "==> Reusing existing release $TAG (id=$ID, prerelease=$PRERELEASE)"
 fi
 
 # Attach each staged binary, replacing an existing asset of the same name.

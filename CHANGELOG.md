@@ -7,7 +7,8 @@ single running list until the first versioned release.
 
 ## Unreleased
 
-_Nothing yet._
+- **Release script** now flags every release before v1.0.0 as a **pre-release**
+  (and corrects the flag on re-runs).
 
 ## 0.3.0
 
