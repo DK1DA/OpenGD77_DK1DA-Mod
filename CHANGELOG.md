@@ -9,6 +9,14 @@ single running list until the first versioned release.
 
 _Nothing yet._
 
+## 0.3.0
+
+- **Fix a second voice-prompt crash** on the Screen Dim menu row: the item *label*
+  ("Screen Dim") is a raw literal, and the shared menu code voices labels via
+  `voicePromptsAppendLanguageString()`, which crashes on any pointer outside the
+  language table. That function now ignores non-language pointers, so a stray
+  literal is skipped instead of hard-faulting. (The dim value is still announced.)
+
 ## 0.2.0
 
 - **Fix crash** opening Display Options with **voice announcements on**: the Screen

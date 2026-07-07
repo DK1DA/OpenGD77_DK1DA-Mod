@@ -343,6 +343,15 @@ void voicePromptsAppendLanguageString(const char *languageStringAdd)
 		return;
 	}
 
+	// The prompt index is derived from the pointer's offset within the currentLanguage
+	// table, so a pointer that isn't actually inside that table (e.g. a raw string
+	// literal passed by mistake) would yield an out-of-range prompt and crash. Ignore it.
+	const char *languageBase = &currentLanguage->LANGUAGE_NAME[0];
+	if ((languageStringAdd < languageBase) || (languageStringAdd >= (languageBase + sizeof(*currentLanguage))))
+	{
+		return;
+	}
+
 	voicePromptsAppendPrompt(NUM_VOICE_PROMPTS +
 			((languageStringAdd - currentLanguage->LANGUAGE_NAME)
 #if ! defined(HAS_COLOURS)
