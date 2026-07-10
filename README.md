@@ -28,15 +28,34 @@ OpenGD77_DK1DA-Mod keeps OpenGD77's core (DMR/FM, hotspot, CPS compatibility) an
   TX talkgroup to the incoming one.
 - **Segmented block S-meter** with one block per S-level (S1–S9 green, S9+ red)
   and a scale label row (S1 S3 S5 S7 S9 / +20 +40 +60).
-- **7-segment "LED" frequency font** with faintly-lit inactive segments, on the
-  VFO and the SK1-held frequency view.
-- **Screen dimming** — optionally dim the backlight to 100 / 50 / 30 % after
+- **7-segment "LED" frequency font** on the VFO and the SK1-held frequency view.
+- **Screen dimming** — optionally dim the backlight to 100 / 50 / 30 / 15 % after
   inactivity (Auto backlight mode); new setting in Display Options.
+- **On-radio channel management** — create and delete channels directly from the
+  Channel quick menu, no PC/CPS required (see [Managing channels](#managing-channels-on-the-radio)).
 - **Main-menu icons** next to each top-level entry.
 - **DMR reliability fix** — resolves a hard-fault (freeze needing a battery pull)
   on the DMR path that affected recent self-built OpenGD77 revisions.
 
 See [`CHANGELOG.md`](CHANGELOG.md) for the complete list.
+
+## Managing channels on the radio
+
+OpenGD77_DK1DA-Mod can create and delete channels without a PC. Both actions live in the
+**Channel quick menu** — from the Channel screen, press the **top (orange)
+button** to open it, then scroll to the bottom:
+
+- **New channel** — creates a blank **145.500 MHz FM** channel in the first free
+  slot, adds it to the current zone, and opens **Channel Details** so you can set
+  the name, frequency, tones, and so on. Press the **green** key to save. The new
+  channel is immediately selectable in the zone (no need to re-enter it).
+- **Delete Channel** — deletes the currently-selected channel after a
+  confirmation (**green** confirms, **red** cancels). It is also scrubbed from
+  every zone that referenced it. The last remaining channel cannot be deleted,
+  and channels locked read-only (e.g. APRS) are protected.
+
+> **Back up your codeplug** (via the CPS) before making bulk edits — these changes
+> are written straight to the radio and there is no on-device undo.
 
 ## Supported radios
 
