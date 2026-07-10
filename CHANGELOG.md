@@ -7,6 +7,10 @@ single running list until the first versioned release.
 
 ## Unreleased
 
+- **Fix:** un-muting during an active QSO left the LED **off** instead of returning
+  to **green**. On un-mute the green RX LED is now restored from the current receive
+  state (active DMR slot or FM/digital signal), so an in-progress call lights green
+  again.
 - **`MANUAL.md`** — a user-facing feature & usage guide covering both inherited
   OpenGD77 features and OpenGD77_DK1DA-Mod additions, each tagged 🟢 [OpenGD77_DK1DA-Mod] or ⚪
   [OpenGD77]. Includes the spectrum scope (VFO sweep, hold `#`), channel add/delete,

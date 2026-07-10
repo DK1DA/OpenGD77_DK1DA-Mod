@@ -39,6 +39,7 @@
 #include "io/Leds.h"
 #include "interfaces/adc.h"
 #include "hardware/radioHardwareInterface.h"
+#include "hardware/HR-C6000.h" // slotState, for restoring the green RX LED after unmute
 
 #include "io/buttons.h"
 #include "usb/usb_com.h"
@@ -1447,9 +1448,15 @@ void applicationMainTask(void)
 			}
 			else if (muteFlashActive)
 			{
-				// Just unmuted: release our forced LED state.
+				// Just unmuted: stop the red flash and restore the green LED to the
+				// current RX state, so a QSO in progress lights green again instead of
+				// staying dark. Green is normally lit for an active DMR slot (matching
+				// our filter) or a received FM/digital signal; if nothing is being
+				// received it stays off. The normal RX code then keeps it correct.
+				bool rxGreen = (slotState == DMR_STATE_RX_1) || (slotState == DMR_STATE_RX_2) ||
+						currentRadioDevice->analogSignalReceived || currentRadioDevice->digitalSignalReceived;
 				LedWrite(LED_RED, 0);
-				LedWrite(LED_GREEN, 0);
+				LedWrite(LED_GREEN, (rxGreen ? 1 : 0));
 				muteFlashActive = false;
 			}
 		}
