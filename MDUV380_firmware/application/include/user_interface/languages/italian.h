@@ -327,6 +327,8 @@ const stringsTable_t italianLanguage =
 .text_size				= "Formato font",//MaxLen: 16 (with ':' + 1 digit)
 .last_talker				= "Ultimo OM RX", // MaxLen: 16 (with ':' + .off or 2 digits value + 's')
 .mute					= "Muto", // MaxLen: 16 (with ':' + .on or .off)
+.delete_channel			= "Elimina canale", // MaxLen: 16
+.keep_one_channel		= "Tieni 1 canale", // MaxLen: 16
 };
 /********************************************************************
  *

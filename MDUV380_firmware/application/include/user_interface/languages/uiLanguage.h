@@ -335,6 +335,8 @@ typedef struct
    const char text_size[LANGUAGE_TEXTS_LENGTH];
    const char last_talker[LANGUAGE_TEXTS_LENGTH];
    const char mute[LANGUAGE_TEXTS_LENGTH];
+   const char delete_channel[LANGUAGE_TEXTS_LENGTH];
+   const char keep_one_channel[LANGUAGE_TEXTS_LENGTH];
 } stringsTable_t;
 
 #endif // _OPENGD77_UILANGUAGE_H_

@@ -58,11 +58,11 @@ done
 # ---- resolve / build the language file ------------------------------------
 LANG_ARGS=()
 if [[ -n "$LANGUAGE" && "$(lc "$LANGUAGE")" != "none" ]]; then
-	# Build the .gla files once if they're missing.
-	if ! ls "$LANG_SRC"/*.gla >/dev/null 2>&1; then
-		echo "==> Building language (.gla) files..."
-		( cd "$LANG_SRC" && gcc -w -I../ -o languages_builder languages_builder.c && ./languages_builder >/dev/null )
-	fi
+	# Always (re)build the .gla language packs so edits to the *.h language files
+	# are picked up. (They're built from the .h sources by languages_builder; a
+	# stale pack would otherwise show blank/old strings on the radio.)
+	echo "==> Building language (.gla) files..."
+	( cd "$LANG_SRC" && gcc -w -I../ -o languages_builder languages_builder.c && ./languages_builder >/dev/null )
 	# Case-insensitive match of the requested name to an actual <Name>.gla file.
 	GLA=""
 	for f in "$LANG_SRC"/*.gla; do

@@ -327,6 +327,8 @@ const stringsTable_t spanishLanguage =
 .text_size				= "Text size",//MaxLen: 16 (with ':' + 1 digit)
 .last_talker				= "Last talker", // MaxLen: 16 (with ':' + .off or 2 digits value + 's')
 .mute					= "Mute", // MaxLen: 16 (with ':' + .on or .off)
+.delete_channel			= "Borrar canal", // MaxLen: 16
+.keep_one_channel		= "Dejar 1 canal", // MaxLen: 16
 };
 /********************************************************************
  *

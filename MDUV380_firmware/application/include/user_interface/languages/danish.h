@@ -327,6 +327,8 @@ const stringsTable_t danishLanguage =
 .text_size				= "Text size",//MaxLen: 16 (with ':' + 1 digit)
 .last_talker				= "Last talker", // MaxLen: 16 (with ':' + .off or 2 digits value + 's')
 .mute					= "Mute", // MaxLen: 16 (with ':' + .on or .off)
+.delete_channel			= "Slet kanal", // MaxLen: 16
+.keep_one_channel		= "Behold 1 kanal", // MaxLen: 16
 };
 /********************************************************************
  *

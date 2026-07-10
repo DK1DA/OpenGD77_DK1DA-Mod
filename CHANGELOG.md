@@ -15,6 +15,11 @@ single running list until the first versioned release.
   - **Delete Channel** — deletes the selected channel after a confirmation, and
     scrubs it out of every zone that referenced it. Refuses to delete the last
     remaining channel, and respects the read-only/APRS channel lock.
+  - The new menu strings are **translated** (German, French, Italian, Spanish,
+    Portuguese, Dutch, Danish, Swedish, Catalan, Finnish, Czech; English fallback
+    for the rest).
+- **`flash.sh`** now always rebuilds the language (`.gla`) packs, so edits to the
+  language files are picked up instead of a stale pack being re-flashed.
 - **Release script** now flags every release before v1.0.0 as a **pre-release**
   (and corrects the flag on re-runs).
 

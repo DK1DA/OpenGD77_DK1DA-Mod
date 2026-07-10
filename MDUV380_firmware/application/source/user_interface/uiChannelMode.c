@@ -2416,7 +2416,7 @@ static void updateQuickMenuScreen(bool isFirstRun)
 					rightSideConst = currentLanguage->new_channel;
 					break;
 				case CH_SCREEN_QUICK_MENU_DELETE_CHANNEL:
-					rightSideConst = "Delete Channel";
+					rightSideConst = currentLanguage->delete_channel;
 					break;
 				default:
 					buf[0] = 0;
@@ -2683,7 +2683,7 @@ static void handleQuickMenuEvent(uiEvent_t *ev)
 
 					if (inUseCount < 2)
 					{
-						snprintf(uiDataGlobal.MessageBox.message, MESSAGEBOX_MESSAGE_LEN_MAX, "Cannot delete\nlast channel");
+						snprintf(uiDataGlobal.MessageBox.message, MESSAGEBOX_MESSAGE_LEN_MAX, "%s", currentLanguage->keep_one_channel);
 						uiDataGlobal.MessageBox.buttons =
 #if defined(PLATFORM_MD9600)
 								MESSAGEBOX_BUTTONS_ENT;
@@ -2695,12 +2695,13 @@ static void handleQuickMenuEvent(uiEvent_t *ev)
 						return;
 					}
 
-					snprintf(uiDataGlobal.MessageBox.message, MESSAGEBOX_MESSAGE_LEN_MAX, "Delete channel?\n%s", currentLanguage->please_confirm);
+					snprintf(uiDataGlobal.MessageBox.message, MESSAGEBOX_MESSAGE_LEN_MAX, "%s\n%s", currentLanguage->delete_channel, currentLanguage->please_confirm);
 					uiDataGlobal.MessageBox.buttons = MESSAGEBOX_BUTTONS_YESNO;
 					uiDataGlobal.MessageBox.validatorCallback = validateDeleteChannel;
 					menuSystemPushNewMenu(UI_MESSAGE_BOX);
 
 					voicePromptsInit();
+					voicePromptsAppendLanguageString(currentLanguage->delete_channel);
 					voicePromptsAppendLanguageString(currentLanguage->please_confirm);
 					voicePromptsPlay();
 					return;

@@ -327,6 +327,8 @@ const stringsTable_t englishLanguage =
 .text_size				= "Text size",//MaxLen: 16 (with ':' + 1 digit)
 .last_talker				= "Last talker", // MaxLen: 16 (with ':' + .off or 2 digits value + 's')
 .mute					= "Mute", // MaxLen: 16 (with ':' + .on or .off)
+.delete_channel			= "Delete Channel", // MaxLen: 16
+.keep_one_channel		= "Keep 1 channel", // MaxLen: 16
 };
 /********************************************************************
  *
