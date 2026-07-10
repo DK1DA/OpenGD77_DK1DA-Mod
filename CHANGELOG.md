@@ -7,7 +7,10 @@ single running list until the first versioned release.
 
 ## Unreleased
 
-_Nothing yet._
+- **`MANUAL.md`** — a user-facing feature & usage guide covering both inherited
+  OpenGD77 features and OpenGD77_DK1DA-Mod additions, each tagged 🟢 [OpenGD77_DK1DA-Mod] or ⚪
+  [OpenGD77]. Includes the spectrum scope (VFO sweep, hold `#`), channel add/delete,
+  mute, dimming, and a button reference.
 
 ## 0.4.0
 

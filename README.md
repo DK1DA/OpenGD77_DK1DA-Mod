@@ -7,7 +7,11 @@ RT-84**.
 
 It adds a number of UI and quality-of-life changes on top of OpenGD77 (segmented
 S-meter, 7-segment frequency font, screen dimming, an audio-mute function, menu
-icons, and more). See [`CHANGELOG.md`](CHANGELOG.md) for the full list.
+icons, on-radio channel editing, and more).
+
+📖 **[`MANUAL.md`](MANUAL.md)** is the full feature & usage guide — every feature is
+tagged 🟢 **[OpenGD77_DK1DA-Mod]** (new/changed here) or ⚪ **[OpenGD77]** (inherited). See
+[`CHANGELOG.md`](CHANGELOG.md) for the version history.
 
 ## Screenshots
 
