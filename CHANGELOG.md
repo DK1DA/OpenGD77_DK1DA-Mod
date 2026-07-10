@@ -11,6 +11,10 @@ single running list until the first versioned release.
   OpenGD77 features and OpenGD77_DK1DA-Mod additions, each tagged 🟢 [OpenGD77_DK1DA-Mod] or ⚪
   [OpenGD77]. Includes the spectrum scope (VFO sweep, hold `#`), channel add/delete,
   mute, dimming, and a button reference.
+- **Documentation website** (`website/`) — MkDocs Material config that renders the
+  markdown into a static, searchable HTML site (client-side search, dark/light
+  theme). Built in Docker via `./website/build-docs.sh`; the public URL is set with
+  `SITE_URL=…`. For self-hosting on Forgejo.
 
 ## 0.4.0
 
