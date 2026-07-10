@@ -7,6 +7,10 @@ single running list until the first versioned release.
 
 ## Unreleased
 
+_Nothing yet._
+
+## 0.5.0
+
 - **Fix:** un-muting during an active QSO left the LED **off** instead of returning
   to **green**. On un-mute the green RX LED is now restored from the current receive
   state (active DMR slot or FM/digital signal), so an in-progress call lights green
