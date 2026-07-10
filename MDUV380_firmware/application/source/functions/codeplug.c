@@ -383,6 +383,46 @@ bool codeplugZoneAddChannelToZoneAndSave(int channelIndex, CodeplugZone_t *zoneB
 	return false;
 }
 
+bool codeplugZoneRemoveChannelFromZoneAndSave(int channelIndex, CodeplugZone_t *zoneBuf)
+{
+	// Not valid for the virtual "All Channels" zone (indexNumber -1): its membership
+	// is the channel in-use bitmap, not a stored channels[] list.
+	if (zoneBuf->NOT_IN_CODEPLUGDATA_indexNumber < 0)
+	{
+		return false;
+	}
+
+	// Find the channel in the zone's list.
+	int found = -1;
+	for (int i = 0; i < zoneBuf->NOT_IN_CODEPLUGDATA_numChannelsInZone; i++)
+	{
+		if (zoneBuf->channels[i] == channelIndex)
+		{
+			found = i;
+			break;
+		}
+	}
+
+	if (found == -1)
+	{
+		return false; // channel is not a member of this zone
+	}
+
+	// Shift the remaining channels down to close the gap, then zero the freed tail slot
+	// (a zero also terminates the list for codeplugZoneGetDataForNumber()).
+	for (int i = found; i < (zoneBuf->NOT_IN_CODEPLUGDATA_numChannelsInZone - 1); i++)
+	{
+		zoneBuf->channels[i] = zoneBuf->channels[i + 1];
+	}
+	zoneBuf->channels[zoneBuf->NOT_IN_CODEPLUGDATA_numChannelsInZone - 1] = 0;
+	zoneBuf->NOT_IN_CODEPLUGDATA_numChannelsInZone--;
+	zoneBuf->NOT_IN_CODEPLUGDATA_highestIndex = zoneBuf->NOT_IN_CODEPLUGDATA_numChannelsInZone;
+
+	// IMPORTANT. Write size is different from the size of the data (see the add function).
+	return EEPROM_Write(CODEPLUG_ADDR_EX_ZONE_LIST + (zoneBuf->NOT_IN_CODEPLUGDATA_indexNumber * (16 + (sizeof(uint16_t) * codeplugChannelsPerZone))),
+			(uint8_t *)zoneBuf, ((codeplugChannelsPerZone == 16) ? CODEPLUG_ZONE_DATA_ORIGINAL_STRUCT_SIZE : CODEPLUG_ZONE_DATA_OPENGD77_STRUCT_SIZE));
+}
+
 static uint16_t codeplugAllChannelsGetCount(void)
 {
 	uint16_t c = 0;
@@ -443,6 +483,48 @@ void codeplugAllChannelsIndexSetUsed(int index)
 		if ((index + 1) > allChannelsHighestChannelIndex)
 		{
 			allChannelsHighestChannelIndex = (index + 1);
+		}
+	}
+}
+
+void codeplugAllChannelsIndexSetUnused(int index)
+{
+	if ((index >= CODEPLUG_CHANNELS_MIN) && (index <= CODEPLUG_CHANNELS_MAX))
+	{
+		index--;
+		int channelBank = (index / CODEPLUG_CHANNELS_PER_BANK);
+		int byteno = (index % CODEPLUG_CHANNELS_PER_BANK) / 8;
+		int cacheOffset = index / 8;
+
+		codeplugAllChannelsCache[cacheOffset] &= ~(1 << (index % 8));
+
+		if(channelBank == 0)
+		{
+			EEPROM_Write(CODEPLUG_ADDR_CHANNEL_HEADER_EEPROM + byteno, &codeplugAllChannelsCache[cacheOffset], 1);
+		}
+		else
+		{
+			SPI_Flash_write(FLASH_ADDRESS_OFFSET + (CODEPLUG_ADDR_CHANNEL_HEADER_FLASH + ((channelBank - 1) *
+					(CODEPLUG_CHANNELS_PER_BANK * CODEPLUG_CHANNEL_DATA_STRUCT_SIZE + 16))) + byteno, &codeplugAllChannelsCache[cacheOffset], 1);
+		}
+
+		if (allChannelsTotalNumOfChannels > 0)
+		{
+			allChannelsTotalNumOfChannels--;
+		}
+
+		// If we just freed the highest-numbered channel, rescan for the new highest.
+		if ((index + 1) >= allChannelsHighestChannelIndex)
+		{
+			allChannelsHighestChannelIndex = 0;
+			for (int i = CODEPLUG_CHANNELS_MAX; i >= CODEPLUG_CHANNELS_MIN; i--)
+			{
+				if (codeplugAllChannelsIndexIsInUse(i))
+				{
+					allChannelsHighestChannelIndex = i;
+					break;
+				}
+			}
 		}
 	}
 }

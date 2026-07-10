@@ -7,6 +7,14 @@ single running list until the first versioned release.
 
 ## Unreleased
 
+- **On-radio channel add/delete.** The Channel quick menu (top button) has two new
+  entries:
+  - **new channel** — creates a blank 145.500 MHz FM channel in the first free
+    slot, adds it to the current zone, and opens Channel Details to edit it. The
+    zone is reloaded so the channel is immediately navigable.
+  - **Delete Channel** — deletes the selected channel after a confirmation, and
+    scrubs it out of every zone that referenced it. Refuses to delete the last
+    remaining channel, and respects the read-only/APRS channel lock.
 - **Release script** now flags every release before v1.0.0 as a **pre-release**
   (and corrects the flag on re-runs).
 

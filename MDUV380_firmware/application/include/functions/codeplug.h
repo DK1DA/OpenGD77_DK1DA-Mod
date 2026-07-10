@@ -415,6 +415,7 @@ void codeplugGetVFO_ChannelData(CodeplugChannel_t *vfoBuf, Channel_t VFONumber);
 void codeplugSetVFO_ChannelData(CodeplugChannel_t *vfoBuf, Channel_t VFONumber);
 bool codeplugAllChannelsIndexIsInUse(int index);
 void codeplugAllChannelsIndexSetUsed(int index);
+void codeplugAllChannelsIndexSetUnused(int index);
 bool codeplugChannelSaveDataForIndex(int index, CodeplugChannel_t *channelBuf);
 CodeplugCSSTypes_t codeplugGetCSSType(uint16_t tone);
 void codeplugConvertChannelInternalToCodeplug(CodeplugChannel_t *codeplugChannel, CodeplugChannel_t *internalChannel);
@@ -442,6 +443,7 @@ bool codeplugGetGeneralSettings(CodeplugGeneralSettings_t *generalSettingsBuffer
 bool codeplugGetSignallingDTMF(CodeplugSignallingDTMF_t *signallingDTMFBuffer);
 bool codeplugGetSignallingDTMFDurations(CodeplugSignallingDTMFDurations_t *signallingDTMFDurationsBuffer);
 bool codeplugZoneAddChannelToZoneAndSave(int channelIndex, CodeplugZone_t *zoneBuf);
+bool codeplugZoneRemoveChannelFromZoneAndSave(int channelIndex, CodeplugZone_t *zoneBuf);
 bool codeplugGetDeviceInfo(CodeplugDeviceInfo_t *deviceInfoBuffer);
 
 uint16_t codeplugGetQuickkeyFunctionID(char key);

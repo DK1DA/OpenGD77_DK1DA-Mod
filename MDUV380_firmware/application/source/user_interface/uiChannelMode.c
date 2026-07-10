@@ -2164,6 +2164,152 @@ static bool validateOverwriteChannel(void)
 	return true;
 }
 
+// Shown when channels are locked (read-only / APRS) and an edit is attempted.
+static void channelEditShowLockedMessageBox(void)
+{
+	snprintf(uiDataGlobal.MessageBox.message, MESSAGEBOX_MESSAGE_LEN_MAX, "%s\n%s", currentLanguage->aprs_channel, currentLanguage->locked);
+	uiDataGlobal.MessageBox.type = MESSAGEBOX_TYPE_INFO;
+	uiDataGlobal.MessageBox.decoration = MESSAGEBOX_DECORATION_FRAME;
+	uiDataGlobal.MessageBox.buttons =
+#if defined(PLATFORM_MD9600)
+			MESSAGEBOX_BUTTONS_ENT;
+#else
+			MESSAGEBOX_BUTTONS_OK;
+#endif
+	uiDataGlobal.MessageBox.validatorCallback = NULL;
+	menuSystemPushNewMenu(UI_MESSAGE_BOX);
+
+	voicePromptsInit();
+	voicePromptsAppendLanguageString(currentLanguage->aprs_channel);
+	voicePromptsAppendLanguageString(currentLanguage->locked);
+	voicePromptsPlay();
+}
+
+// Create a blank/default 145.500 MHz FM simplex channel in the first free slot,
+// add it to the current zone, select it and open Channel Details to edit it.
+static void channelEditCreateNewChannel(void)
+{
+	int16_t newChannelIndex;
+
+	for (newChannelIndex = CODEPLUG_CHANNELS_MIN; newChannelIndex <= CODEPLUG_CHANNELS_MAX; newChannelIndex++)
+	{
+		if (codeplugAllChannelsIndexIsInUse(newChannelIndex) == false)
+		{
+			break;
+		}
+	}
+
+	if (newChannelIndex > CODEPLUG_CHANNELS_MAX)
+	{
+		nextKeyBeepMelody = (int16_t *)MELODY_NACK_BEEP; // codeplug full, no free slot
+		return;
+	}
+
+	// Start from the currently loaded channel so all structural fields are valid,
+	// then override the essentials to a blank FM simplex default.
+	char nameBuf[SCREEN_LINE_BUFFER_SIZE];
+	CodeplugChannel_t tempChannel = channelScreenChannelData;
+
+	snprintf(nameBuf, SCREEN_LINE_BUFFER_SIZE, "%s %d", currentLanguage->new_channel, newChannelIndex);
+	memset(&tempChannel.name, 0xFF, sizeof(tempChannel.name)); // codeplug strings are 0xFF-padded
+	memcpy(&tempChannel.name, nameBuf, strlen(nameBuf));
+
+	tempChannel.chMode = RADIO_MODE_ANALOG;
+	tempChannel.rxFreq = tempChannel.txFreq = 14550000; // 145.500 MHz
+	tempChannel.txTone = tempChannel.rxTone = CODEPLUG_CSS_TONE_NONE;
+	tempChannel.sql = 0U; // use the global squelch level
+	tempChannel.rxGroupList = 0;
+	tempChannel.contact = 0;
+	tempChannel.NOT_IN_CODEPLUG_flag = 0x00;
+	tempChannel.NOT_IN_CODEPLUG_CALCULATED_DISTANCE_X10 = -1;
+
+	if (codeplugChannelSaveDataForIndex(newChannelIndex, &tempChannel) == false)
+	{
+		nextKeyBeepMelody = (int16_t *)MELODY_NACK_BEEP;
+		return;
+	}
+	codeplugAllChannelsIndexSetUsed(newChannelIndex); // mark the slot used AFTER the data is written
+
+	if (currentZone.NOT_IN_CODEPLUGDATA_indexNumber == 0xDEADBEEF)
+	{
+		uiChannelInitializeCurrentZone();
+	}
+
+	// Add it to the current zone ("All Channels" already includes every used slot).
+	if (CODEPLUG_ZONE_IS_ALLCHANNELS(currentZone))
+	{
+		codeplugSetLastUsedChannelInZone(currentZone.NOT_IN_CODEPLUGDATA_indexNumber, newChannelIndex);
+	}
+	else
+	{
+		if (codeplugZoneAddChannelToZoneAndSave(newChannelIndex, &currentZone))
+		{
+			codeplugSetLastUsedChannelInZone(currentZone.NOT_IN_CODEPLUGDATA_indexNumber, (currentZone.NOT_IN_CODEPLUGDATA_numChannelsInZone - 1));
+		}
+	}
+
+	// Reload the zone so the new channel is immediately navigable without having to
+	// re-enter the zone (refreshes the channel count / highest index for real zones,
+	// and re-derives them from the channel in-use bitmap for "All Channels").
+	uiChannelInitializeCurrentZone();
+
+	// Select the new channel (kept in memory, so Channel Details edits valid data).
+	memcpy(&channelScreenChannelData, &tempChannel, sizeof(tempChannel));
+	uiDataGlobal.currentSelectedChannelNumber = newChannelIndex;
+	uiDataGlobal.VoicePrompts.inhibitInitial = true;
+
+	menuSystemPopAllAndDisplaySpecificRootMenu(UI_CHANNEL_MODE, true);
+	menuSystemPushNewMenu(MENU_CHANNEL_DETAILS); // jump straight into the editor
+	nextKeyBeepMelody = (int16_t *)MELODY_ACK_BEEP;
+}
+
+// Confirmation callback for deleting the currently-selected channel.
+static bool validateDeleteChannel(void)
+{
+	if (uiDataGlobal.MessageBox.keyPressed == KEY_GREEN)
+	{
+		int deletedChannelIndex = uiDataGlobal.currentSelectedChannelNumber;
+
+		// Remove the channel from every real zone that references it, so no zone is
+		// left pointing at a freed slot.
+		int numZones = codeplugZonesGetCount();
+		for (int z = 0; z < numZones; z++)
+		{
+			CodeplugZone_t zoneBuf;
+			if (codeplugZoneGetDataForNumber(z, &zoneBuf) && (CODEPLUG_ZONE_IS_ALLCHANNELS(zoneBuf) == false))
+			{
+				codeplugZoneRemoveChannelFromZoneAndSave(deletedChannelIndex, &zoneBuf);
+			}
+		}
+
+		// Free the slot (clears the in-use bitmap bit).
+		codeplugAllChannelsIndexSetUnused(deletedChannelIndex);
+
+		// Point the current zone at a valid remaining channel and force a reload.
+		if (CODEPLUG_ZONE_IS_ALLCHANNELS(currentZone))
+		{
+			int firstCh = CODEPLUG_CHANNELS_MIN;
+			while ((firstCh <= CODEPLUG_CHANNELS_MAX) && (codeplugAllChannelsIndexIsInUse(firstCh) == false))
+			{
+				firstCh++;
+			}
+			codeplugSetLastUsedChannelInZone(currentZone.NOT_IN_CODEPLUGDATA_indexNumber, ((firstCh <= CODEPLUG_CHANNELS_MAX) ? firstCh : CODEPLUG_CHANNELS_MIN));
+		}
+		else
+		{
+			codeplugSetLastUsedChannelInZone(currentZone.NOT_IN_CODEPLUGDATA_indexNumber, 0); // first channel in the zone
+		}
+
+		uiChannelInitializeCurrentZone(); // its channel list/count changed
+		channelScreenChannelData.rxFreq = 0; // force the channel screen to reload
+
+		menuSystemPopAllAndDisplaySpecificRootMenu(UI_CHANNEL_MODE, true);
+		nextKeyBeepMelody = (int16_t *)MELODY_ACK_BEEP;
+	}
+
+	return true;
+}
+
 static void updateQuickMenuScreen(bool isFirstRun)
 {
 	int mNum = 0;
@@ -2265,6 +2411,12 @@ static void updateQuickMenuScreen(bool isFirstRun)
 				case CH_SCREEN_QUICK_MENU_AUDIO_MUTE:
 					leftSide = currentLanguage->mute;
 					rightSideConst = (uiDataGlobal.QuickMenu.tmpAudioMute ? currentLanguage->yes : currentLanguage->no);
+					break;
+				case CH_SCREEN_QUICK_MENU_NEW_CHANNEL:
+					rightSideConst = currentLanguage->new_channel;
+					break;
+				case CH_SCREEN_QUICK_MENU_DELETE_CHANNEL:
+					rightSideConst = "Delete Channel";
 					break;
 				default:
 					buf[0] = 0;
@@ -2492,6 +2644,65 @@ static void handleQuickMenuEvent(uiEvent_t *ev)
 						voicePromptsPlay();
 					}
 
+					return;
+				}
+					break;
+
+				case CH_SCREEN_QUICK_MENU_NEW_CHANNEL:
+					if (settingsIsOptionBitSet(BIT_CHANNELS_ARE_READ_ONLY))
+					{
+						channelEditShowLockedMessageBox();
+					}
+					else
+					{
+						channelEditCreateNewChannel();
+					}
+					return;
+
+				case CH_SCREEN_QUICK_MENU_DELETE_CHANNEL:
+				{
+					if (settingsIsOptionBitSet(BIT_CHANNELS_ARE_READ_ONLY))
+					{
+						channelEditShowLockedMessageBox();
+						return;
+					}
+
+					// Don't allow deleting the last remaining channel (would leave the
+					// codeplug with no channels).
+					int inUseCount = 0;
+					for (int i = CODEPLUG_CHANNELS_MIN; (i <= CODEPLUG_CHANNELS_MAX) && (inUseCount < 2); i++)
+					{
+						if (codeplugAllChannelsIndexIsInUse(i))
+						{
+							inUseCount++;
+						}
+					}
+
+					uiDataGlobal.MessageBox.type = MESSAGEBOX_TYPE_INFO;
+					uiDataGlobal.MessageBox.decoration = MESSAGEBOX_DECORATION_FRAME;
+
+					if (inUseCount < 2)
+					{
+						snprintf(uiDataGlobal.MessageBox.message, MESSAGEBOX_MESSAGE_LEN_MAX, "Cannot delete\nlast channel");
+						uiDataGlobal.MessageBox.buttons =
+#if defined(PLATFORM_MD9600)
+								MESSAGEBOX_BUTTONS_ENT;
+#else
+								MESSAGEBOX_BUTTONS_OK;
+#endif
+						uiDataGlobal.MessageBox.validatorCallback = NULL;
+						menuSystemPushNewMenu(UI_MESSAGE_BOX);
+						return;
+					}
+
+					snprintf(uiDataGlobal.MessageBox.message, MESSAGEBOX_MESSAGE_LEN_MAX, "Delete channel?\n%s", currentLanguage->please_confirm);
+					uiDataGlobal.MessageBox.buttons = MESSAGEBOX_BUTTONS_YESNO;
+					uiDataGlobal.MessageBox.validatorCallback = validateDeleteChannel;
+					menuSystemPushNewMenu(UI_MESSAGE_BOX);
+
+					voicePromptsInit();
+					voicePromptsAppendLanguageString(currentLanguage->please_confirm);
+					voicePromptsPlay();
 					return;
 				}
 					break;
