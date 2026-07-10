@@ -7,6 +7,10 @@ single running list until the first versioned release.
 
 ## Unreleased
 
+_Nothing yet._
+
+## 0.4.0
+
 - **On-radio channel add/delete.** The Channel quick menu (top button) has two new
   entries:
   - **new channel** — creates a blank 145.500 MHz FM channel in the first free
