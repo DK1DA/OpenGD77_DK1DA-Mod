@@ -1441,18 +1441,27 @@ void applicationMainTask(void)
 
 			if (audioAmpIsMuted() || (lastVolume == -99)) // explicit mute or volume knob fully down
 			{
+				if (!muteFlashActive)
+				{
+					// Hold the green LED off for the whole mute, so the DMR RX handler
+					// (which re-asserts green as soon as it reads it off) can't make it
+					// flicker green between the red flashes.
+					LedGreenSuppress(true);
+					muteFlashActive = true;
+				}
+
 				bool flashOn = ((ticksGetMillis() % 2000) < 500);
-				LedWrite(LED_GREEN, 0);
 				LedWrite(LED_RED, (flashOn ? 1 : 0));
-				muteFlashActive = true;
 			}
 			else if (muteFlashActive)
 			{
-				// Just unmuted: stop the red flash and restore the green LED to the
-				// current RX state, so a QSO in progress lights green again instead of
-				// staying dark. Green is normally lit for an active DMR slot (matching
-				// our filter) or a received FM/digital signal; if nothing is being
-				// received it stays off. The normal RX code then keeps it correct.
+				// Just unmuted: release the green hold, stop the red flash and restore
+				// the green LED to the current RX state, so a QSO in progress lights
+				// green again instead of staying dark. Green is normally lit for an
+				// active DMR slot (matching our filter) or a received FM/digital signal;
+				// if nothing is being received it stays off. The normal RX code then
+				// keeps it correct.
+				LedGreenSuppress(false);
 				bool rxGreen = (slotState == DMR_STATE_RX_1) || (slotState == DMR_STATE_RX_2) ||
 						currentRadioDevice->analogSignalReceived || currentRadioDevice->digitalSignalReceived;
 				LedWrite(LED_RED, 0);

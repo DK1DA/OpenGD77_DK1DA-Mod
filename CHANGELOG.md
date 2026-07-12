@@ -7,6 +7,10 @@ single running list until the first versioned release.
 
 ## Unreleased
 
+- **Fix:** green LED **flickering** between the red flashes while muted during a DMR
+  QSO. The DMR RX handler re-asserts the green LED as soon as it reads it off, racing
+  the main-loop mute clear; the green LED is now **held off at the driver** for the
+  whole mute (and released on un-mute), so only the red flash shows.
 - **`screenshot.sh`** — a one-command wrapper around the OpenGD77 screen grabber
   that auto-detects the serial port and sets up a self-contained Python venv
   (pyserial + pillow) on first run. Saves to `screenshots/`.

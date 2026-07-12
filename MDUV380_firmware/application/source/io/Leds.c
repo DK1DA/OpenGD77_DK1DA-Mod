@@ -48,9 +48,28 @@ void LEDsInit(void)
 #endif
 }
 
+// When set, the green LED is held off: any LedWrite(LED_GREEN, 1) is forced to 0.
+// Used while muted so the DMR RX handler (which re-asserts green whenever it reads
+// it as 0) can't make the green LED flicker between the red mute flashes.
+static volatile bool greenLedSuppressed = false;
+
+void LedGreenSuppress(bool suppress)
+{
+	greenLedSuppressed = suppress;
+	if (suppress)
+	{
+		LedWrite(LED_GREEN, 0); // force it off now
+	}
+}
+
 void LedWrite(LEDs_t theLED, uint8_t output)
 {
 #if ! defined(PLATFORM_GD77S)
+	if ((theLED == LED_GREEN) && greenLedSuppressed)
+	{
+		output = 0; // green is held off (e.g. while muted)
+	}
+
 	LEDsState[theLED] = output;
 
 	if (settingsIsOptionBitSet(BIT_ALL_LEDS_DISABLED) == 0)
