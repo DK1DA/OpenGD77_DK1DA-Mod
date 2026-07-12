@@ -104,6 +104,9 @@ enum
 	DISPLAY_SHOW_DISTANCE,
 	DISPLAY_DMR_LAST_TALKER_ON_SCREEN,
 	DISPLAY_SCREEN_DIM,
+#if defined(HAS_COLOURS)
+	DISPLAY_THEME_PRESET,
+#endif
 	NUM_DISPLAY_MENU_ITEMS
 };
 
@@ -268,6 +271,18 @@ static void updateScreen(bool isFirstRun)
 						}
 					}
 					break;
+
+#if defined(HAS_COLOURS)
+				case DISPLAY_THEME_PRESET:
+					{
+						// Preset names are plain literals -> rightSideVar (voice-safe).
+						const char *presetNames[] = { "Custom", "BASIC 80s", "Terminal" };
+						uint8_t p = themeGetPreset();
+						leftSide = "Theme";
+						snprintf(rightSideVar, SCREEN_LINE_BUFFER_SIZE, "%s", presetNames[(p < NUM_THEME_PRESETS) ? p : 0]);
+					}
+					break;
+#endif
 
 #if ! defined(PLATFORM_GD77S)
 				case DISPLAY_AUTO_NIGHT:
@@ -630,6 +645,19 @@ static void handleEvent(uiEvent_t *ev)
 					}
 					break;
 
+#if defined(HAS_COLOURS)
+				case DISPLAY_THEME_PRESET:
+					{
+						uint8_t p = themeGetPreset();
+						if (p < (NUM_THEME_PRESETS - 1))
+						{
+							themeSetPreset(p + 1, true); // apply + persist, live preview
+							displayThemeResetToDefault();
+						}
+					}
+					break;
+#endif
+
 #if ! defined(PLATFORM_GD77S)
 				case DISPLAY_AUTO_NIGHT:
 					if (settingsIsOptionBitSet(BIT_AUTO_NIGHT) == false)
@@ -838,6 +866,19 @@ static void handleEvent(uiEvent_t *ev)
 						settingsSetScreenDimLevel(settingsGetScreenDimLevel() - 1);
 					}
 					break;
+
+#if defined(HAS_COLOURS)
+				case DISPLAY_THEME_PRESET:
+					{
+						uint8_t p = themeGetPreset();
+						if (p > THEME_PRESET_CUSTOM)
+						{
+							themeSetPreset(p - 1, true); // apply + persist, live preview
+							displayThemeResetToDefault();
+						}
+					}
+					break;
+#endif
 
 #if ! defined(PLATFORM_GD77S)
 				case DISPLAY_AUTO_NIGHT:

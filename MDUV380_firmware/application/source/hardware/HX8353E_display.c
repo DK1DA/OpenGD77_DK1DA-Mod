@@ -1510,28 +1510,104 @@ void themeInitToDefaultValues(DayTime_t daytime, bool invert)
 	themeItems[daytime][THEME_ITEM_FG_BD_COLOUR] = PLATFORM_COLOUR_FORMAT_SWAP_BYTES(RGB888_TO_PLATFORM_COLOUR_FORMAT(0xFF0000U));
 }
 
-void themeInit(bool SPIFlashAvailable)
+// Set every theme item to fgRGB, then override the background items with bgRGB, for
+// a cohesive single-palette look. The selected-menu-item background is intentionally
+// left as the foreground colour so the highlighted row still inverts.
+static void themeSetAllItems(DayTime_t daytime, uint32_t fgRGB, uint32_t bgRGB)
 {
+	uint16_t fg = PLATFORM_COLOUR_FORMAT_SWAP_BYTES(RGB888_TO_PLATFORM_COLOUR_FORMAT(fgRGB));
+	uint16_t bg = PLATFORM_COLOUR_FORMAT_SWAP_BYTES(RGB888_TO_PLATFORM_COLOUR_FORMAT(bgRGB));
+
+	for (int i = 0; i < THEME_ITEM_MAX; i++)
+	{
+		themeItems[daytime][i] = fg;
+	}
+	themeItems[daytime][THEME_ITEM_BG] = bg;
+	themeItems[daytime][THEME_ITEM_BG_SPLASHSCREEN] = bg;
+	themeItems[daytime][THEME_ITEM_BG_NOTIFICATION] = bg;
+	themeItems[daytime][THEME_ITEM_BG_MENU_NAME] = bg;
+	themeItems[daytime][THEME_ITEM_BG_HEADER_TEXT] = bg;
+	// THEME_ITEM_BG_MENU_ITEM_SELECTED intentionally left = fg (inverts the selected row).
+}
+
+void themeApplyPreset(uint8_t preset)
+{
+	// Start from the monochrome defaults, then overlay the chosen preset.
 	themeInitToDefaultValues(NIGHT, true);
 	themeInitToDefaultValues(DAY, false);
 
-	// Read and apply user's theme, if any
+	switch (preset)
+	{
+		case THEME_PRESET_BASIC80S: // Commodore 64 BASIC: light blue on blue (day & night)
+			themeSetAllItems(DAY,   0x7C71D5, 0x3E31A2);
+			themeSetAllItems(NIGHT, 0x7C71D5, 0x3E31A2);
+			break;
+
+		case THEME_PRESET_TERMINAL:
+			themeSetAllItems(DAY,   0x000000, 0x00A000); // black on green
+			themeSetAllItems(NIGHT, 0x00E000, 0x000000); // green on black
+			break;
+
+		case THEME_PRESET_CUSTOM:
+		default:
+			// Overlay the user's Custom theme from the codeplug, if present (CPS edits
+			// only ever touch this).
+			{
+				uint16_t themingTmp[THEME_ITEM_MAX];
+
+				if (codeplugGetOpenGD77CustomData(CODEPLUG_CUSTOM_DATA_TYPE_THEME_DAY, (uint8_t *) &themingTmp))
+				{
+					memcpy(&themeItems[DAY], &themingTmp, sizeof(themingTmp));
+				}
+				if (codeplugGetOpenGD77CustomData(CODEPLUG_CUSTOM_DATA_TYPE_THEME_NIGHT, (uint8_t *) &themingTmp))
+				{
+					memcpy(&themeItems[NIGHT], &themingTmp, sizeof(themingTmp));
+				}
+			}
+			break;
+	}
+
+	foregroundColour = themeItems[DAY][THEME_ITEM_FG_DEFAULT];
+	backgroundColour = themeItems[DAY][THEME_ITEM_BG];
+}
+
+uint8_t themeGetPreset(void)
+{
+	uint8_t buf[4] = { THEME_PRESET_CUSTOM, 0, 0, 0 };
+
+	if (codeplugGetOpenGD77CustomData(CODEPLUG_CUSTOM_DATA_TYPE_THEME_PRESET, buf))
+	{
+		return (buf[0] < NUM_THEME_PRESETS) ? buf[0] : THEME_PRESET_CUSTOM;
+	}
+	return THEME_PRESET_CUSTOM;
+}
+
+void themeSetPreset(uint8_t preset, bool save)
+{
+	if (preset >= NUM_THEME_PRESETS)
+	{
+		preset = THEME_PRESET_CUSTOM;
+	}
+
+	themeApplyPreset(preset);
+
+	if (save)
+	{
+		uint8_t buf[1] = { preset };
+		codeplugSetOpenGD77CustomData(CODEPLUG_CUSTOM_DATA_TYPE_THEME_PRESET, buf, sizeof(buf));
+	}
+}
+
+void themeInit(bool SPIFlashAvailable)
+{
 	if (SPIFlashAvailable)
 	{
-		uint16_t themingTmp[THEME_ITEM_MAX];
-
-		if (codeplugGetOpenGD77CustomData(CODEPLUG_CUSTOM_DATA_TYPE_THEME_DAY, (uint8_t *) &themingTmp))
-		{
-			memcpy(&themeItems[DAY], &themingTmp, sizeof(themingTmp));
-
-			foregroundColour = themeItems[DAY][THEME_ITEM_FG_DEFAULT];
-			backgroundColour = themeItems[DAY][THEME_ITEM_BG];
-		}
-
-		if (codeplugGetOpenGD77CustomData(CODEPLUG_CUSTOM_DATA_TYPE_THEME_NIGHT, (uint8_t *) &themingTmp))
-		{
-			memcpy(&themeItems[NIGHT], &themingTmp, sizeof(themingTmp));
-		}
+		themeApplyPreset(themeGetPreset());
+	}
+	else
+	{
+		themeInitToDefaultValues(NIGHT, true);
+		themeInitToDefaultValues(DAY, false);
 	}
 
 	if (settingsIsOptionBitSet(BIT_AUTO_NIGHT_OVERRIDE) && (uiDataGlobal.daytimeOverridden == NIGHT))

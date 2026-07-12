@@ -7,6 +7,11 @@ single running list until the first versioned release.
 
 ## Unreleased
 
+- **Theme presets** — selectable on the radio in Display Options → "Theme":
+  **Custom** (CPS-editable, default), **BASIC 80s** (Commodore 64 blue/light-blue),
+  and **Terminal** (green-on-black night / black-on-green day). The choice is stored
+  in the codeplug custom-data area (migration-safe; defaults to Custom), and CPS
+  theme edits only ever change Custom.
 - **Fix:** green LED **flickering** between the red flashes while muted during a DMR
   QSO. The DMR RX handler re-asserts the green LED as soon as it reads it off, racing
   the main-loop mute clear; the green LED is now **held off at the driver** for the

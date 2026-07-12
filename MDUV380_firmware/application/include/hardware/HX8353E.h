@@ -269,8 +269,21 @@ void displayDrawFrequencySevenSeg(int16_t x, int16_t y, int16_t cellW, int16_t c
 #endif
 
 #if defined(HAS_COLOURS)
+// OpenGD77_DK1DA-Mod selectable theme presets. CUSTOM is the CPS-editable theme (default);
+// the others are fixed palettes baked into the firmware.
+typedef enum
+{
+	THEME_PRESET_CUSTOM = 0, // editable via CPS / on-device colour editor
+	THEME_PRESET_BASIC80S,   // Commodore 64 BASIC (light blue on blue)
+	THEME_PRESET_TERMINAL,   // green terminal (green-on-black night / black-on-green day)
+	NUM_THEME_PRESETS
+} themePreset_t;
+
 void themeInitToDefaultValues(DayTime_t daytime, bool invert);
 void themeInit(bool SPIFlashAvailable);
+void themeApplyPreset(uint8_t preset);     // rebuild themeItems[] for the given preset
+uint8_t themeGetPreset(void);              // read the stored preset (default CUSTOM)
+void themeSetPreset(uint8_t preset, bool save); // apply, and optionally persist to the codeplug
 void displayThemeApply(themeItem_t fgItem, themeItem_t bgItem);
 void displayThemeResetToDefault(void);
 bool displayThemeIsForegroundColourEqualTo(themeItem_t fgItem);

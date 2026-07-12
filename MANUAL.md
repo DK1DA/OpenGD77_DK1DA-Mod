@@ -58,6 +58,17 @@ Optionally dims the backlight after inactivity to **100 / 50 / 30 / 15 %** of th
 configured brightness (only in **Auto** backlight mode). Any activity restores full
 brightness. Set it in **Menu → Options → Display Options → Screen Dim**.
 
+### Theme presets — 🟢 [OpenGD77_DK1DA-Mod]
+Pick a colour theme on the radio at **Menu → Options → Display Options → "Theme"**
+(◀/▶ to change; the screen updates live):
+
+- **Custom** — the theme edited via the CPS or the on-radio colour editor (default).
+- **BASIC 80s** — a Commodore-64 look (light blue on blue).
+- **Terminal** — a green terminal (green-on-black at night, black-on-green by day).
+
+Editing colours in the CPS only affects **Custom**; the two built-in presets are
+fixed. Every element (S-meter, frequencies, menus) follows the selected theme.
+
 ### Main-menu icons — 🟢 [OpenGD77_DK1DA-Mod]
 Each top-level menu entry has a small icon next to it.
 
