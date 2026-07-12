@@ -20,7 +20,8 @@
 
 - **[User Manual](MANUAL.md)** — every feature, tagged 🟢 **OpenGD77_DK1DA-Mod** (new/changed)
   or ⚪ **OpenGD77** (inherited), with a button reference.
-- **[Building & Flashing](TOOLS.md)** — Docker build, the flash helper, screenshots.
+- **[Building & Flashing](TOOLS.md)** — Docker build (`./build-firmware.sh`),
+  flashing (`./flash.sh`), and grabbing screenshots (`./screenshot.sh`).
 - **[Changelog](CHANGELOG.md)** — version history.
 
 ## Supported radios
