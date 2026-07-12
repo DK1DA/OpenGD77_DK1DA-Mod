@@ -87,9 +87,19 @@ Models: `MD-UV380`, `DM-1701`, `MD-9600`, `MD-2017`, `MD-380`.
 grabber (the "gd-77" name is historical). It talks over the USB **CDC serial port**,
 auto-detects the radio model and reads the MD-UV380's 160×128 RGB565 framebuffer into a PNG.
 
-1. Power the radio on **normally** (not DFU mode) and navigate to the screen you want.
-   Connect USB.
-2. Run it (`-o` takes the filename **without** `.png`):
+Power the radio on **normally** (not DFU mode), navigate to the screen you want, and
+connect USB.
+
+**Easiest — the `./screenshot.sh` helper** (auto-detects the serial port and sets up a
+self-contained Python venv with `pyserial` + `pillow` on first run):
+
+```bash
+./screenshot.sh                 # -> screenshots/screenshot-<timestamp>.png
+./screenshot.sh vfo-7seg        # -> screenshots/vfo-7seg.png
+./screenshot.sh -d /dev/cu.usbmodemXXXX [name]   # explicit port
+```
+
+**Or call the grabber directly** (`-o` takes the filename **without** `.png`):
 
 ```bash
 python3 MDUV380_firmware/tools/gd-77_screen_grabber.py \

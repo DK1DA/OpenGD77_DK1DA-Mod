@@ -7,7 +7,9 @@ single running list until the first versioned release.
 
 ## Unreleased
 
-_Nothing yet._
+- **`screenshot.sh`** — a one-command wrapper around the OpenGD77 screen grabber
+  that auto-detects the serial port and sets up a self-contained Python venv
+  (pyserial + pillow) on first run. Saves to `screenshots/`.
 
 ## 0.5.0
 

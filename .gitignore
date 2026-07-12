@@ -8,3 +8,7 @@ languages_builder
 
 # Generated docs site
 website/_build/
+
+# Screenshot tool venv + scratch output
+MDUV380_firmware/tools/.venv/
+screenshots/
