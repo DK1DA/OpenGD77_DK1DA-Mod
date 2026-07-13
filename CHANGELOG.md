@@ -7,6 +7,10 @@ single running list until the first versioned release.
 
 ## Unreleased
 
+_Nothing yet._
+
+## 0.7.0
+
 - **DMR text messages (SMS)** — full ETSI/Motorola-TMS-compatible messaging:
   compose on the keypad (multi-tap, up to 160 characters), inbox and sent box
   (8 messages each, persisted to flash across power cycles), 10 editable
