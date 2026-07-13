@@ -40,7 +40,6 @@ OpenGD77_DK1DA-Mod keeps OpenGD77's core (DMR/FM, hotspot, CPS compatibility) an
   **Vertexic** (amber/orange). CPS edits only affect Custom.
 - **On-radio channel management** — create and delete channels directly from the
   Channel quick menu, no PC/CPS required (see [Managing channels](#managing-channels-on-the-radio)).
-- **Main-menu icons** next to each top-level entry.
 - **DMR reliability fix** — resolves a hard-fault (freeze needing a battery pull)
   on the DMR path that affected recent self-built OpenGD77 revisions.
 

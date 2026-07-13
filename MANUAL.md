@@ -70,9 +70,6 @@ Pick a colour theme on the radio at **Menu → Options → Display Options → "
 Editing colours in the CPS only affects **Custom**; the two built-in presets are
 fixed. Every element (S-meter, frequencies, menus) follows the selected theme.
 
-### Main-menu icons — 🟢 [OpenGD77_DK1DA-Mod]
-Each top-level menu entry has a small icon next to it.
-
 ### Mute indicator — 🟢 [OpenGD77_DK1DA-Mod]
 While muted, a bold **"M"** appears in the status bar (just left of the battery)
 and the **red LED flashes** (0.5 s every 2 s). See *Mute* below.

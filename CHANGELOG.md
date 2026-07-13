@@ -7,7 +7,7 @@ single running list until the first versioned release.
 
 ## Unreleased
 
-_Nothing yet._
+- **Removed the main-menu icons** — the top-level menu entries are plain text again.
 
 ## 0.6.0
 
