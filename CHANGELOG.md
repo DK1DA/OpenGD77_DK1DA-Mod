@@ -7,7 +7,11 @@ single running list until the first versioned release.
 
 ## Unreleased
 
-_Nothing yet._
+- **Fix:** the radio **crashed** when navigating the Messages menu with voice
+  prompts enabled. Menu strings added after the voice-prompt pack was built map
+  to a table-of-contents slot that doesn't exist; the player read past the end
+  of the table. Such strings now play silence instead (also hardens the
+  pre-existing strings sitting at the end of the table).
 
 ## 0.7.0
 

@@ -352,13 +352,25 @@ void voicePromptsAppendLanguageString(const char *languageStringAdd)
 		return;
 	}
 
-	voicePromptsAppendPrompt(NUM_VOICE_PROMPTS +
+	int promptNumber = NUM_VOICE_PROMPTS +
 			((languageStringAdd - currentLanguage->LANGUAGE_NAME)
 #if ! defined(HAS_COLOURS)
 					- ((languageStringAdd >= currentLanguage->theme_chooser) ?
 							((currentLanguage->theme_colour_picker_blue - currentLanguage->theme_chooser) + LANGUAGE_TEXTS_LENGTH) : 0)
 #endif
-			) / LANGUAGE_TEXTS_LENGTH);
+			) / LANGUAGE_TEXTS_LENGTH;
+
+	// Language strings added after the voice prompt pack was built have no
+	// entry in the table of contents. voicePromptsPlay() reads TOC[promptNumber + 1],
+	// so anything at or past the last slot would read past the array and crash;
+	// play silence for those instead.
+	if ((promptNumber < 0) || (promptNumber >= (VOICE_PROMPTS_TOC_SIZE - 1)))
+	{
+		voicePromptsAppendPrompt(PROMPT_SILENCE);
+		return;
+	}
+
+	voicePromptsAppendPrompt(promptNumber);
 }
 
 void voicePromptsPlay(void)
