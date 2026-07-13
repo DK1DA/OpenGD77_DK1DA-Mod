@@ -32,6 +32,7 @@
 #include "user_interface/uiLocalisation.h"
 #include "functions/voicePrompts.h"
 #include "functions/rxPowerSaving.h"
+#include "functions/smsCore.h"
 #if defined(PLATFORM_MD9600) || defined(PLATFORM_MD380) || defined(PLATFORM_MDUV380) || defined(PLATFORM_RT84_DM1701) || defined(PLATFORM_MD2017)
 #include "hardware/radioHardwareInterface.h"
 #endif
@@ -272,6 +273,13 @@ menuStatus_t uiChannelMode(uiEvent_t *ev, bool isFirstRun)
 		// Don't go any further while APRS is beaconing
 		if (aprsBeaconingForcedManualBeaconingTriggered() && aprsBeaconingIsTransmitting())
 		{
+			return menuChannelExitStatus;
+		}
+
+		// A new text message arrived
+		if (smsHasUnseenRxMessage() && (trxTransmissionEnabled == false) && (trxIsTransmitting == false))
+		{
+			menuSystemPushNewMenu(UI_SMS_RX_POPUP);
 			return menuChannelExitStatus;
 		}
 #endif
@@ -1295,6 +1303,20 @@ static void handleEvent(uiEvent_t *ev)
 			ev->keys.key = 127;
 			menuChannelExitStatus |= (MENU_STATUS_LIST_TYPE | MENU_STATUS_FORCE_FIRST);
 			// End Trick
+			return;
+		}
+		else
+#else
+		if (KEYCHECK_LONGDOWN(ev->keys, KEY_GREEN))
+		{
+			// Direct access to the DMR text messages
+			if (uiDataGlobal.Scan.active)
+			{
+				uiChannelModeStopScanning();
+			}
+
+			menuSystemPushNewMenu(MENU_SMS);
+			menuChannelExitStatus |= (MENU_STATUS_LIST_TYPE | MENU_STATUS_FORCE_FIRST);
 			return;
 		}
 		else

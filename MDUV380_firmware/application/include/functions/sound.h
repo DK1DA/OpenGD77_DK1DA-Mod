@@ -39,6 +39,7 @@ extern Task_t beepTask;
 extern int16_t melody_generic[512];
 extern const int16_t MELODY_POWER_ON[];
 extern const int16_t MELODY_PRIVATE_CALL[];
+extern const int16_t MELODY_SMS_RX[];
 extern const int16_t MELODY_KEY_BEEP[];
 extern const int16_t MELODY_KEY_LONG_BEEP[];
 extern const int16_t MELODY_ACK_BEEP[];

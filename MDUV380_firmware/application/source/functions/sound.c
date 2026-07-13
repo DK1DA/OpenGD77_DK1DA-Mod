@@ -98,6 +98,14 @@ const int16_t MELODY_PRIVATE_CALL[] = {
 								880, DIT_LENGTH
 
 								-1, -1 };// Morse letters PC for Private Call
+// Rising two-tone chime, distinct from the private call morse alert
+const int16_t MELODY_SMS_RX[] = {
+								1047, 80,
+								0, 40,
+								1319, 80,
+								0, 40,
+								1568, 160,
+								-1, -1 };
 const int16_t MELODY_KEY_BEEP[] = { 600, 60, -1, -1 };
 const int16_t MELODY_KEY_LONG_BEEP[] = { 880, 60, -1, -1 };
 /* These melodies are not currently used

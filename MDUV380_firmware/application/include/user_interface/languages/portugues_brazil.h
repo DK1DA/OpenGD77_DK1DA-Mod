@@ -329,6 +329,22 @@ const stringsTable_t portuguesBrazilLanguage =
 .mute					= "Mute", // MaxLen: 16 (with ':' + .on or .off)
 .delete_channel			= "Apagar canal", // MaxLen: 16
 .keep_one_channel		= "Manter 1 canal", // MaxLen: 16
+.messages						= "Mensagens", // MaxLen: 16
+.new_message					= "Nova mensagem", // MaxLen: 16
+.inbox						= "Recebidas", // MaxLen: 16
+.sent_box						= "Enviadas", // MaxLen: 16
+.quick_text					= "Texto rápido", // MaxLen: 16
+.send_to						= "Enviar para", // MaxLen: 16
+.sms_sending					= "Enviando", // MaxLen: 16
+.sms_sent						= "Enviada", // MaxLen: 16
+.sms_delivered				= "Entregue", // MaxLen: 16
+.sms_no_ack					= "Sem ACK", // MaxLen: 16
+.sms_resend					= "Reenviar?", // MaxLen: 16
+.sms_channel_busy				= "Canal ocupado", // MaxLen: 16
+.sms_wait_for_ack				= "Esperar ACK", // MaxLen: 16
+.sms_own_id_only				= "Só meu ID", // MaxLen: 16
+.message_from					= "Mensagem de", // MaxLen: 16
+.delete_message				= "Apagar msg?", // MaxLen: 16
 };
 /*********************************************************************
  *

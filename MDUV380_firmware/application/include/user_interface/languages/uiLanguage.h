@@ -35,7 +35,7 @@
 #else
 #define LANGUAGE_TAG_MAGIC_NUMBER { 'G', 'D', '7', '7' }, { 'L', 'A', 'N', 'G' } // Never change this tag.
 #endif
-#define LANGUAGE_TAG_VERSION      { 0x00, 0x00, 0x00, 0x05 } // Bump the version each time the language struct is changed
+#define LANGUAGE_TAG_VERSION      { 0x00, 0x00, 0x00, 0x06 } // Bump the version each time the language struct is changed
 
 typedef struct
 {
@@ -337,6 +337,22 @@ typedef struct
    const char mute[LANGUAGE_TEXTS_LENGTH];
    const char delete_channel[LANGUAGE_TEXTS_LENGTH];
    const char keep_one_channel[LANGUAGE_TEXTS_LENGTH];
+   const char messages[LANGUAGE_TEXTS_LENGTH];            // 282, keep in sync with menuSystem.c smsMenuItems/mainMenuItems
+   const char new_message[LANGUAGE_TEXTS_LENGTH];         // 283
+   const char inbox[LANGUAGE_TEXTS_LENGTH];               // 284
+   const char sent_box[LANGUAGE_TEXTS_LENGTH];            // 285
+   const char quick_text[LANGUAGE_TEXTS_LENGTH];          // 286
+   const char send_to[LANGUAGE_TEXTS_LENGTH];
+   const char sms_sending[LANGUAGE_TEXTS_LENGTH];
+   const char sms_sent[LANGUAGE_TEXTS_LENGTH];
+   const char sms_delivered[LANGUAGE_TEXTS_LENGTH];
+   const char sms_no_ack[LANGUAGE_TEXTS_LENGTH];
+   const char sms_resend[LANGUAGE_TEXTS_LENGTH];
+   const char sms_channel_busy[LANGUAGE_TEXTS_LENGTH];
+   const char sms_wait_for_ack[LANGUAGE_TEXTS_LENGTH];
+   const char sms_own_id_only[LANGUAGE_TEXTS_LENGTH];
+   const char message_from[LANGUAGE_TEXTS_LENGTH];
+   const char delete_message[LANGUAGE_TEXTS_LENGTH];
 } stringsTable_t;
 
 #endif // _OPENGD77_UILANGUAGE_H_

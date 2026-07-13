@@ -37,6 +37,7 @@ key), the **top / orange** button, and a keypad with **green** (✓ / menu), **r
 | **SK1 + SK2** | Reverse repeater — ⚪ [OpenGD77] |
 | **`#`** (hold, VFO) | Toggle the **spectrum scope** — ⚪ [OpenGD77] |
 | **SK2 + green** (Channel) | Open **Channel Details** editor — ⚪ [OpenGD77] |
+| **Green** (hold) | Open **Messages** (DMR SMS) — 🟢 [OpenGD77_DK1DA-Mod] |
 
 ---
 
@@ -154,6 +155,37 @@ upstream OpenGD77. The AMBE voice codec is merged in at flash time (see
 OpenGD77_DK1DA-Mod resolves a hard-fault (freeze needing a battery pull) on the DMR path that
 affected recent self-built OpenGD77 revisions — the codec is called through C
 function pointers instead of inline assembler that modern GCC miscompiled.
+
+### Text messages (SMS) — 🟢 [OpenGD77_DK1DA-Mod]
+
+Send and receive DMR text messages, compatible with BrandMeister, hotspots and
+OEM radios (Motorola TMS format on transmit; TMS **and** Anytone/"DMR standard"
+decoded on receive).
+
+**Open it** from **Menu → Messages**, or **hold GREEN** on the channel/VFO
+screen. The hub offers *New message*, *Inbox*, *Sent*, *Quick text* and
+*Options*.
+
+**Composing:** enter the destination DMR ID with the number keys (**UP/DOWN**
+switches between the ID and text fields), type up to 160 characters with
+multi-tap on the keypad (**LEFT/RIGHT** move the cursor, **SK2+LEFT** deletes),
+then press **GREEN** to send. Sending only works on a DMR channel; progress is
+shown as notifications ("Sending", "Sent", "Delivered"). With **Wait for ACK**
+enabled (default), a missing delivery report pops up a **resend** prompt.
+
+**Receiving:** a popup with a chime shows the sender and a preview —
+**GREEN** opens the message, **SK2+GREEN** starts a reply, **RED** dismisses.
+The inbox and sent box keep the last 8 messages each and survive power
+cycles; unread messages are marked `*`. In a message view, **GREEN**
+replies (inbox) or re-edits/resends (sent), **SK2+RED** deletes. The radio
+automatically answers delivery-report requests from other radios.
+
+**Quick texts:** 10 editable templates (**GREEN** uses one in a new message,
+**SK2+GREEN** edits, **SK2+RED** deletes).
+
+**Options:** *Wait for ACK* (delivery confirmation) and *My ID only*
+(ignore messages not addressed to your DMR ID). PTT is locked out for the
+second or two a message is on air; hotspot mode is unaffected.
 
 ---
 

@@ -329,6 +329,22 @@ const stringsTable_t italianLanguage =
 .mute					= "Muto", // MaxLen: 16 (with ':' + .on or .off)
 .delete_channel			= "Elimina canale", // MaxLen: 16
 .keep_one_channel		= "Tieni 1 canale", // MaxLen: 16
+.messages						= "Messaggi", // MaxLen: 16
+.new_message					= "Nuovo messaggio", // MaxLen: 16
+.inbox						= "In arrivo", // MaxLen: 16
+.sent_box						= "Inviati", // MaxLen: 16
+.quick_text					= "Testo rapido", // MaxLen: 16
+.send_to						= "Invia a", // MaxLen: 16
+.sms_sending					= "Invio...", // MaxLen: 16
+.sms_sent						= "Inviato", // MaxLen: 16
+.sms_delivered				= "Consegnato", // MaxLen: 16
+.sms_no_ack					= "Nessun ACK", // MaxLen: 16
+.sms_resend					= "Reinviare?", // MaxLen: 16
+.sms_channel_busy				= "Canale occupato", // MaxLen: 16
+.sms_wait_for_ack				= "Attendi ACK", // MaxLen: 16
+.sms_own_id_only				= "Solo mio ID", // MaxLen: 16
+.message_from					= "Messaggio da", // MaxLen: 16
+.delete_message				= "Elimina msg?", // MaxLen: 16
 };
 /********************************************************************
  *

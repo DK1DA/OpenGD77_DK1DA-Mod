@@ -320,7 +320,15 @@ enum MENU_SCREENS
 #if !defined(PLATFORM_GD77S)
 	MENU_APRS,
 #endif
+	MENU_SMS,// DMR text messages hub
 	// *** Add new menus to be accessed using quickkey (ID: 0..31) above this line ***
+	MENU_SMS_COMPOSE,
+	MENU_SMS_INBOX,
+	MENU_SMS_SENT,
+	MENU_SMS_VIEW,
+	MENU_SMS_QUICKTEXT,
+	MENU_SMS_OPTIONS,
+	UI_SMS_RX_POPUP,
 	UI_MESSAGE_BOX,
 	UI_HOTSPOT_MODE,
 	UI_CPS,
@@ -437,6 +445,7 @@ extern menuDataGlobal_t 		menuDataGlobal;
 extern const menuItemsList_t 	menuDataMainMenu;
 extern const menuItemsList_t 	menuDataContact;
 extern const menuItemsList_t 	menuDataOptions;
+extern const menuItemsList_t 	menuDataSMS;
 extern bool lockscreenIsRearming;
 
 menuStatus_t uiVFOMode(uiEvent_t *event, bool isFirstRun);
@@ -482,5 +491,15 @@ menuStatus_t menuThemeOptions(uiEvent_t *ev, bool isFirstRun);
 menuStatus_t menuThemeItemsBrowser(uiEvent_t *ev, bool isFirstRun);
 menuStatus_t menuColourPicker(uiEvent_t *ev, bool isFirstRun);
 #endif
+
+// DMR text messages (SMS)
+menuStatus_t menuSMSCompose(uiEvent_t *ev, bool isFirstRun);
+menuStatus_t menuSMSList(uiEvent_t *ev, bool isFirstRun); // serves inbox, sent and view
+menuStatus_t menuSMSQuickText(uiEvent_t *ev, bool isFirstRun);
+menuStatus_t menuSMSOptions(uiEvent_t *ev, bool isFirstRun);
+menuStatus_t uiSMSPopup(uiEvent_t *ev, bool isFirstRun);
+void menuSMSComposePrefill(uint32_t dstId, const char *text); // 0 / NULL leave the field untouched
+void menuSMSComposeSetQuickTextEditTarget(int slotIndex);     // compose edits a quick text instead of sending
+void menuSMSListSetViewTarget(bool sentBox, uint8_t recordIndex);
 
 #endif

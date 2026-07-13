@@ -40,6 +40,7 @@
 #include "interfaces/interrupts.h"
 #include "functions/rxPowerSaving.h"
 #include "functions/ticks.h"
+#include "functions/smsCore.h"
 #include "interfaces/gps.h"
 #if defined(PLATFORM_MD9600) || defined(PLATFORM_MD380) || defined(PLATFORM_MDUV380) || defined(PLATFORM_RT84_DM1701) || defined(PLATFORM_MD2017)
 #include "hardware/radioHardwareInterface.h"
@@ -253,6 +254,9 @@ static struct
 	int hotspotPostponedFrameHandling;
 	char talkAliasText[33];
 	uint8_t talkAliasLocation[7];
+	volatile bool smsActive; // an SMS air job is being streamed instead of voice
+	volatile uint8_t smsFrameIndex;
+	const smsAirJob_t *volatile smsJob;
 } hrc = {
 		.hasEncodedAudio = false,
 		.hasAudioData = false,
@@ -299,7 +303,10 @@ static struct
 		.wakeTriesCount = 0,
 		.hotspotPostponedFrameHandling = 0,
 		.talkAliasText = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-		.talkAliasLocation = { 0, 0, 0, 0, 0, 0, 0}
+		.talkAliasLocation = { 0, 0, 0, 0, 0, 0, 0},
+		.smsActive = false,
+		.smsFrameIndex = 0,
+		.smsJob = NULL
 };
 
 volatile int slotState = DMR_STATE_IDLE;
@@ -826,6 +833,14 @@ void PORTC_IRQHandler(void)
 #endif
 static inline void hrc6000SysSendRejectedInt(void)
 {
+	if (hrc.smsActive)
+	{
+		// The channel became busy before our data went out
+		hrc.smsActive = false;
+		hrc.transmissionEnabled = false;
+		trxTransmissionEnabled = false;
+		smsTxNotifyRejected();
+	}
 }
 
 static inline void hrc6000SysSendStartInt(void)
@@ -895,6 +910,11 @@ static inline void hrc6000SysSendEndInt(void)
 
 		In MSK mode, there is no substate interrupt.
 	 */
+
+	if (reg_0x86 & 0x08) // confirmed-data feedback packet was received
+	{
+		smsTxNotifyHwAck();
+	}
 }
 
 static inline void hrc6000SysPostAccessInt(void)
@@ -1038,6 +1058,24 @@ static inline void hrc6000SysReceivedDataInt(void)
 	if (hrc6000CrcIsValid() && (slotState != DMR_STATE_IDLE) && (hrc.skipCount > 0) && (rxSyncClass != SYNC_CLASS_DATA) && ((rxDataType & 0x07) == 0x01))
 	{
 		hrc.skipCount--;
+	}
+
+	// DMR short data (SMS): data header, rate-1/2 and rate-3/4 data bursts.
+	// The chip has already BPTC/FEC decoded the burst; the logical payload
+	// is read from the LC RAM (rate-3/4 blocks carry 18 bytes, everything
+	// else 12).
+	if (hrc6000CrcIsValid() && (rxPrivacyIndicator == 0) && (rxSyncClass == SYNC_CLASS_DATA) &&
+			((rxDataType == DMR_DATA_TYPE_DATA_HEADER) || (rxDataType == DMR_DATA_TYPE_RATE_12_DATA) || (rxDataType == DMR_DATA_TYPE_RATE_34_DATA)) &&
+			(settingsUsbMode != USB_MODE_HOTSPOT) && (hrc.transmissionEnabled == false) &&
+			hrc6000CheckColourCodeFilter())
+	{
+		uint8_t smsFrame[DMR_DATA_RATE34_BLOCK_LENGTH];
+		uint8_t burstLength = ((rxDataType == DMR_DATA_TYPE_RATE_34_DATA) ? DMR_DATA_RATE34_BLOCK_LENGTH : LC_DATA_LENGTH);
+
+		if (SPI0ReadPageRegByteArray(0x02, 0x00, smsFrame, burstLength) == kStatus_Success)
+		{
+			smsRxProcessDataFrame(rxDataType, smsFrame);
+		}
 	}
 
 	// Check for correct received packet
@@ -1470,6 +1508,48 @@ static void hrc6000TransitionToTx(void)
 	hrc.txSequence = 0;
 }
 
+// Queue the next SMS burst for the upcoming timeslot: 12-byte logical
+// payload into the LC RAM, its DMR data type into register 0x50. The chip
+// performs the BPTC/FEC encoding. Once the last frame is queued the
+// transmission is ended the same way as a released PTT.
+static void hrc6000SendSmsFrame(void)
+{
+	const smsAirJob_t *job = hrc.smsJob;
+	uint8_t dataType;
+
+	if ((job == NULL) || (hrc.smsFrameIndex >= job->frameCount))
+	{
+		return;
+	}
+
+	// register 0x50 value: high nibble = DMR data type, low bits per datasheet
+	if (hrc.smsFrameIndex < job->preambleCount)
+	{
+		dataType = 0x30; // CSBK
+	}
+	else if (hrc.smsFrameIndex == job->preambleCount)
+	{
+		dataType = 0x64; // data header
+	}
+	else
+	{
+		dataType = 0x70; // rate-1/2 data
+	}
+
+	SPI0WritePageRegByteArray(0x02, 0x00, (uint8_t *)job->frames[hrc.smsFrameIndex], LC_DATA_LENGTH);
+	SPI0WritePageRegByte(0x04, 0x41, 0x80); // Transmit during next Timeslot
+	SPI0WritePageRegByte(0x04, 0x50, dataType);
+
+	hrc.smsFrameIndex++;
+
+	if (hrc.smsFrameIndex >= job->frameCount)
+	{
+		// all bursts are queued, terminate (the terminator frame is sent by the TX_END path)
+		hrc.transmissionEnabled = false;
+		trxTransmissionEnabled = false;
+	}
+}
+
 //used as a delayed callback to allow time for the final Tx burst and then simulate the final Rx Interrupt and return to receive.
 void hrc6000TxBurstCallback(void)
 {
@@ -1712,9 +1792,16 @@ void hrc6000TimeslotInterruptHandler(void)
 
 		case DMR_STATE_TX_START_1: // Start TX (second step)
 			LedWrite(LED_RED, 1); // for repeater wakeup
-			hrc6000SendPcOrTgLCHeader();
-			SPI0WritePageRegByte(0x04, 0x41, 0x80);    // Transmit during next Timeslot
-			SPI0WritePageRegByte(0x04, 0x50, 0x10);    // Set Data Type to 0001 (Voice LC Header), Data, LCSS=00
+			if (hrc.smsActive)
+			{
+				hrc6000SendSmsFrame();
+			}
+			else
+			{
+				hrc6000SendPcOrTgLCHeader();
+				SPI0WritePageRegByte(0x04, 0x41, 0x80);    // Transmit during next Timeslot
+				SPI0WritePageRegByte(0x04, 0x50, 0x10);    // Set Data Type to 0001 (Voice LC Header), Data, LCSS=00
+			}
 			trxIsTransmitting = true;
 			slotState = DMR_STATE_TX_START_2;
 			break;
@@ -1725,8 +1812,15 @@ void hrc6000TimeslotInterruptHandler(void)
 			break;
 
 		case DMR_STATE_TX_START_3: // Start TX (fourth step)
-			SPI0WritePageRegByte(0x04, 0x41, 0x80);     // Transmit during Next Timeslot
-			SPI0WritePageRegByte(0x04, 0x50, 0x10);     // Set Data Type to 0001 (Voice LC Header), Data, LCSS=00
+			if (hrc.smsActive)
+			{
+				hrc6000SendSmsFrame();
+			}
+			else
+			{
+				SPI0WritePageRegByte(0x04, 0x41, 0x80);     // Transmit during Next Timeslot
+				SPI0WritePageRegByte(0x04, 0x50, 0x10);     // Set Data Type to 0001 (Voice LC Header), Data, LCSS=00
+			}
 			slotState = DMR_STATE_TX_START_4;
 			break;
 
@@ -1734,7 +1828,7 @@ void hrc6000TimeslotInterruptHandler(void)
 			SPI0WritePageRegByte(0x04, 0x41, 0x00); 	// Do nothing on the next TS
 			slotState = DMR_STATE_TX_START_5;
 
-			if (settingsUsbMode != USB_MODE_HOTSPOT)
+			if ((settingsUsbMode != USB_MODE_HOTSPOT) && (hrc.smsActive == false))
 			{
 				hrc.ambeBufferCount = 0;
 				hrc.deferredUpdateBufferOutPtr = deferredUpdateBuffer;
@@ -1744,8 +1838,15 @@ void hrc6000TimeslotInterruptHandler(void)
 			break;
 
 		case DMR_STATE_TX_START_5: // Start TX (sixth step)
-			SPI0WritePageRegByte(0x04, 0x41, 0x80);     // Transmit during next Timeslot
-			SPI0WritePageRegByte(0x04, 0x50, 0x10);     // Set Data Type to 0001 (Voice LC Header), Data, LCSS=00
+			if (hrc.smsActive)
+			{
+				hrc6000SendSmsFrame();
+			}
+			else
+			{
+				SPI0WritePageRegByte(0x04, 0x41, 0x80);     // Transmit during next Timeslot
+				SPI0WritePageRegByte(0x04, 0x50, 0x10);     // Set Data Type to 0001 (Voice LC Header), Data, LCSS=00
+			}
 			hrc.TAPhase = 0;
 			slotState = DMR_STATE_TX_1;
 			break;
@@ -1763,6 +1864,15 @@ void hrc6000TimeslotInterruptHandler(void)
 			break;
 
 		case DMR_STATE_TX_2: // Ongoing TX (active timeslot)
+			if (hrc.smsActive)
+			{
+				// One data burst per active timeslot; no audio involved, and
+				// txSequence stays at 0 so DMR_STATE_TX_1 can terminate cleanly
+				hrc6000SendSmsFrame();
+				slotState = DMR_STATE_TX_1;
+				break;
+			}
+
 			if (hrc.transmissionEnabled)
 			{
 				if (settingsUsbMode == USB_MODE_HOTSPOT)
@@ -1826,7 +1936,9 @@ void hrc6000TimeslotInterruptHandler(void)
 			break;
 
 		case DMR_STATE_TX_END_1: // Stop TX (first step)
-			if (getCurrentTATxFlag() != TA_TX_OFF)
+			// After an SMS the LC RAM still holds the last data block, so a
+			// valid LC has to be rewritten for the terminator frame
+			if (hrc.smsActive || (getCurrentTATxFlag() != TA_TX_OFF))
 			{
 				hrc6000SendPcOrTgLCHeader();
 			}
@@ -1837,6 +1949,13 @@ void hrc6000TimeslotInterruptHandler(void)
 			break;
 
 		case DMR_STATE_TX_END_2: // Stop TX (second step)
+			if (hrc.smsActive)
+			{
+				hrc.smsActive = false;
+				hrc.smsJob = NULL;
+				LedWrite(LED_RED, 0); // no TX screen is handling the LED for SMS
+				smsTxNotifyAirDone();
+			}
 			// Need to hold on this TS after Tx ends otherwise if DMR Mon TS filtering is disabled the radio may switch timeslot
 			dmrMonitorCapturedTS = hrc.tsLockedTS = trxGetDMRTimeSlot();
 			hrc.dmrMonitorCapturedTimeout = nonVolatileSettings.dmrCaptureTimeout * 1000;
@@ -2017,6 +2136,9 @@ static void hrc6000InitDigitalState(void)
 	hrc.interruptTimeout = 0;
 	slotState = DMR_STATE_IDLE;
 	trxIsTransmitting = false;
+	hrc.smsActive = false;
+	hrc.smsJob = NULL;
+	hrc.smsFrameIndex = 0;
 	hrc.tickCount = 0;
 	hrc.skipCount = 0;
 	hrc.tsAgreed = 0;
@@ -2759,6 +2881,49 @@ void HRC6000SetTalkerAliasLocation(uint32_t Lat, uint32_t Lon)
 bool HRC6000IRQHandlerIsRunning(void)
 {
 	return hrc.inIRQHandler;
+}
+
+// Start streaming the prepared SMS air job. The regular DMR TX machinery
+// (including the repeater wake sequence in RMO) is reused; only the burst
+// contents differ from a voice call.
+bool HRC6000StartSmsTransmission(void)
+{
+	const smsAirJob_t *job = smsGetPendingAirJob();
+
+	if ((job == NULL) || (job->frameCount == 0) ||
+			trxTransmissionEnabled || trxIsTransmitting ||
+			(trxGetMode() != RADIO_MODE_DIGITAL) ||
+			(settingsUsbMode == USB_MODE_HOTSPOT) ||
+			(slotState != DMR_STATE_IDLE))
+	{
+		return false;
+	}
+
+	if (hrc.isWaking == WAKING_MODE_FAILED)
+	{
+		hrc.isWaking = WAKING_MODE_NONE; // recover from an earlier failed repeater wake
+	}
+
+	hrc.smsJob = job;
+	hrc.smsFrameIndex = 0;
+	hrc.smsActive = true;
+	smsAirJobStarted();
+
+	trxEnableTransmission();
+
+	return true;
+}
+
+bool HRC6000IsSendingSMS(void)
+{
+	return hrc.smsActive;
+}
+
+void HRC6000CancelSmsTransmission(void)
+{
+	hrc.smsActive = false;
+	hrc.smsJob = NULL;
+	hrc.smsFrameIndex = 0;
 }
 
 bool HRC6000HasGotSync(void)

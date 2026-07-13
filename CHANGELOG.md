@@ -7,6 +7,19 @@ single running list until the first versioned release.
 
 ## Unreleased
 
+- **DMR text messages (SMS)** — full ETSI/Motorola-TMS-compatible messaging:
+  compose on the keypad (multi-tap, up to 160 characters), inbox and sent box
+  (8 messages each, persisted to flash across power cycles), 10 editable
+  quick-text templates, an incoming-message popup with chime and one-key
+  reply, and delivery confirmation (waits for the ETSI response PDU / ACK
+  with a resend prompt on timeout). Transmits in the Motorola TMS format
+  (UDP port 4007) understood by BrandMeister, hotspots and most OEM radios;
+  receives both TMS and the Anytone/"DMR standard" format (port 5016) and
+  answers delivery-report requests from other radios. Reachable from the
+  main menu ("Messages") or a **long-press on GREEN** in channel/VFO mode.
+  Options: "Wait for ACK" and "My ID only" (accept only messages addressed
+  to your own DMR ID). Voice PTT is locked out while a message transmits,
+  and hotspot mode is unaffected.
 - **Removed the main-menu icons** — the top-level menu entries are plain text again.
 
 ## 0.6.0

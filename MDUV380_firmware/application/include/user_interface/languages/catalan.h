@@ -329,6 +329,22 @@ const stringsTable_t catalanLanguage=
 .mute					= "Mute", // MaxLen: 16 (with ':' + .on or .off)
 .delete_channel			= "Esborra canal", // MaxLen: 16
 .keep_one_channel		= "Deixa 1 canal", // MaxLen: 16
+.messages						= "Messages", // MaxLen: 16
+.new_message					= "New message", // MaxLen: 16
+.inbox						= "Inbox", // MaxLen: 16
+.sent_box						= "Sent", // MaxLen: 16
+.quick_text					= "Quick text", // MaxLen: 16
+.send_to						= "Send to", // MaxLen: 16
+.sms_sending					= "Sending", // MaxLen: 16
+.sms_sent						= "Sent", // MaxLen: 16
+.sms_delivered				= "Delivered", // MaxLen: 16
+.sms_no_ack					= "No ACK", // MaxLen: 16
+.sms_resend					= "Resend?", // MaxLen: 16
+.sms_channel_busy				= "Channel busy", // MaxLen: 16
+.sms_wait_for_ack				= "Wait for ACK", // MaxLen: 16
+.sms_own_id_only				= "My ID only", // MaxLen: 16
+.message_from					= "Message from", // MaxLen: 16
+.delete_message				= "Delete message?", // MaxLen: 16
 };
 /********************************************************************
  *

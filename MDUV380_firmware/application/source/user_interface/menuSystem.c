@@ -90,7 +90,15 @@ menuDataGlobal_t menuDataGlobal =
 #if !defined(PLATFORM_GD77S)
 				NULL,// APRS options
 #endif
+				&menuDataSMS,// SMS hub
 				// *** Add new menus to be accessed using quickkey (ID: 0..31) above this line ***
+				NULL,// SMS compose
+				NULL,// SMS inbox
+				NULL,// SMS sent
+				NULL,// SMS view
+				NULL,// SMS quick texts
+				NULL,// SMS options
+				NULL,// SMS RX popup
 				NULL,// MessageBox
 				NULL,// hotspot mode
 				NULL,// CPS
@@ -148,7 +156,15 @@ static menuFunctionData_t menuFunctions[] =
 #if !defined(PLATFORM_GD77S)
 		{ menuAPRSOptions,          NULL, NULL, 0 },
 #endif
+		{ menuDisplayMenuList,      NULL, NULL, 0 },// SMS hub
 		// *** Add new menus to be accessed using quickkey (ID: 0..31) above this line ***
+		{ menuSMSCompose,           NULL, NULL, 0 },
+		{ menuSMSList,              NULL, NULL, 0 },// SMS inbox
+		{ menuSMSList,              NULL, NULL, 0 },// SMS sent
+		{ menuSMSList,              NULL, NULL, 0 },// SMS view
+		{ menuSMSQuickText,         NULL, NULL, 0 },
+		{ menuSMSOptions,           NULL, NULL, 0 },
+		{ uiSMSPopup,               NULL, NULL, 0 },
 		{ uiMessageBox,             NULL, NULL, 0 },
 		{ menuHotspotMode,          NULL, NULL, 0 },
 		{ uiCPS,                    NULL, NULL, 0 },
@@ -649,6 +665,7 @@ const menuItemNewData_t mainMenuItems[] =
 {
 	{   3, MENU_ZONE_LIST       },
 	{   6, MENU_CONTACTS_MENU   },
+	{ 282, MENU_SMS             },// messages
 	{  12, MENU_CHANNEL_DETAILS },
 	{   4, MENU_RSSI_SCREEN     },
 	{   8, MENU_FIRMWARE_INFO   },
@@ -665,6 +682,21 @@ const menuItemsList_t menuDataMainMenu =
 {
 	.numItems = (sizeof(mainMenuItems) / sizeof(mainMenuItems[0])),
 	.items = mainMenuItems
+};
+
+static const menuItemNewData_t smsMenuItems[] =
+{
+	{ 283, MENU_SMS_COMPOSE   },// new message
+	{ 284, MENU_SMS_INBOX     },// inbox
+	{ 285, MENU_SMS_SENT      },// sent
+	{ 286, MENU_SMS_QUICKTEXT },// quick text
+	{   9, MENU_SMS_OPTIONS   },// options
+};
+
+const menuItemsList_t menuDataSMS =
+{
+	.numItems = (sizeof(smsMenuItems) / sizeof(smsMenuItems[0])),
+	.items = smsMenuItems
 };
 
 static const menuItemNewData_t contactMenuItems[] =

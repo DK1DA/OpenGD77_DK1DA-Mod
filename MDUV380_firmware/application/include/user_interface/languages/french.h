@@ -329,6 +329,22 @@ const stringsTable_t frenchLanguage =
 .mute					= "Sourdine", // MaxLen: 16 (with ':' + .on or .off)
 .delete_channel			= "Effacer canal", // MaxLen: 16
 .keep_one_channel		= "Garder 1 canal", // MaxLen: 16
+.messages						= "Messages", // MaxLen: 16
+.new_message					= "Nouveau message", // MaxLen: 16
+.inbox						= "Messages reçus", // MaxLen: 16
+.sent_box						= "Envoyés", // MaxLen: 16
+.quick_text					= "Texte rapide", // MaxLen: 16
+.send_to						= "Envoyer à", // MaxLen: 16
+.sms_sending					= "Envoi...", // MaxLen: 16
+.sms_sent						= "Envoyé", // MaxLen: 16
+.sms_delivered				= "Distribué", // MaxLen: 16
+.sms_no_ack					= "Pas d’ACK", // MaxLen: 16
+.sms_resend					= "Renvoyer ?", // MaxLen: 16
+.sms_channel_busy				= "Canal occupé", // MaxLen: 16
+.sms_wait_for_ack				= "Attendre ACK", // MaxLen: 16
+.sms_own_id_only				= "Mon ID seul", // MaxLen: 16
+.message_from					= "Message de", // MaxLen: 16
+.delete_message				= "Suppr. message?", // MaxLen: 16
 };
 /********************************************************************
  *

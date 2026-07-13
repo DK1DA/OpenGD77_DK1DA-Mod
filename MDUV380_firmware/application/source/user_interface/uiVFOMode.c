@@ -32,6 +32,7 @@
 #endif
 #include "functions/trx.h"
 #include "functions/rxPowerSaving.h"
+#include "functions/smsCore.h"
 #include "user_interface/menuSystem.h"
 #include "user_interface/uiUtilities.h"
 #include "user_interface/uiLocalisation.h"
@@ -256,6 +257,13 @@ menuStatus_t uiVFOMode(uiEvent_t *ev, bool isFirstRun)
 		// Don't go any further while APRS is beaconing
 		if (aprsBeaconingForcedManualBeaconingTriggered() && aprsBeaconingIsTransmitting())
 		{
+			return menuVFOExitStatus;
+		}
+
+		// A new text message arrived
+		if (smsHasUnseenRxMessage() && (trxTransmissionEnabled == false) && (trxIsTransmitting == false))
+		{
+			menuSystemPushNewMenu(UI_SMS_RX_POPUP);
 			return menuVFOExitStatus;
 		}
 #endif
@@ -1308,6 +1316,20 @@ static void handleEvent(uiEvent_t *ev)
 				ev->keys.key = 127;
 				menuVFOExitStatus |= (MENU_STATUS_LIST_TYPE | MENU_STATUS_FORCE_FIRST);
 				// End Trick
+				return;
+			}
+			else
+#else
+			if (KEYCHECK_LONGDOWN(ev->keys, KEY_GREEN))
+			{
+				// Direct access to the DMR text messages
+				if (uiDataGlobal.Scan.active)
+				{
+					uiVFOModeStopScanning();
+				}
+
+				menuSystemPushNewMenu(MENU_SMS);
+				menuVFOExitStatus |= (MENU_STATUS_LIST_TYPE | MENU_STATUS_FORCE_FIRST);
 				return;
 			}
 			else

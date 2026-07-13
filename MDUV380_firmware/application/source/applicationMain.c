@@ -53,6 +53,8 @@
 #include "interfaces/settingsStorage.h"
 #include "interfaces/adc.h"
 #include "functions/rxPowerSaving.h"
+#include "functions/smsCore.h"
+#include "functions/smsStorage.h"
 
 #if defined(USING_EXTERNAL_DEBUGGER)
 #include "SeggerRTT/RTT/SEGGER_RTT.h"
@@ -62,6 +64,68 @@
 
 // Couldn't declare into aprs.h, due to header cross-dependence.
 void aprsBeaconingTick(uiEvent_t *ev);
+
+static bool smsResendTimeoutCallback(void)
+{
+	if (uiDataGlobal.MessageBox.keyPressed == KEY_GREEN)
+	{
+		smsResendLast();
+	}
+
+	return true;
+}
+
+static void smsHandleEvents(void)
+{
+	for (smsEvent_t smsEvent = smsPopEvent(); smsEvent != SMS_EVENT_NONE; smsEvent = smsPopEvent())
+	{
+		switch (smsEvent)
+		{
+			case SMS_EVENT_TX_SENDING:
+				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_MESSAGE, 2000, currentLanguage->sms_sending, true);
+				break;
+
+			case SMS_EVENT_TX_SENT:
+				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_MESSAGE, 2000, currentLanguage->sms_sent, true);
+				break;
+
+			case SMS_EVENT_TX_DELIVERED:
+				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_MESSAGE, 2000, currentLanguage->sms_delivered, true);
+
+				if (melody_play == NULL)
+				{
+					soundSetMelody(MELODY_ACK_BEEP);
+				}
+				break;
+
+			case SMS_EVENT_TX_CHANNEL_BUSY:
+				uiNotificationShow(NOTIFICATION_TYPE_MESSAGE, NOTIFICATION_ID_MESSAGE, 2000, currentLanguage->sms_channel_busy, true);
+
+				if (melody_play == NULL)
+				{
+					soundSetMelody(MELODY_NACK_BEEP);
+				}
+				break;
+
+			case SMS_EVENT_TX_TIMEOUT:
+				if (smsCanResendLast())
+				{
+					snprintf(uiDataGlobal.MessageBox.message, MESSAGEBOX_MESSAGE_LEN_MAX, "%s\n%s",
+							currentLanguage->sms_no_ack, currentLanguage->sms_resend);
+					uiDataGlobal.MessageBox.type = MESSAGEBOX_TYPE_INFO;
+					uiDataGlobal.MessageBox.buttons = MESSAGEBOX_BUTTONS_YESNO;
+					uiDataGlobal.MessageBox.decoration = MESSAGEBOX_DECORATION_FRAME;
+					uiDataGlobal.MessageBox.validatorCallback = smsResendTimeoutCallback;
+					menuSystemPushNewMenu(UI_MESSAGE_BOX);
+				}
+				break;
+
+			case SMS_EVENT_RX_MESSAGE: // the channel/VFO screens open the popup
+			default:
+				break;
+		}
+	}
+}
 
 volatile bool mainIsRunning = true;
 static bool updateMessageOnScreen = false;
@@ -505,6 +569,9 @@ void applicationMainTask(void)
 		powerOffFinalStage(false, true);
 	}
 #endif
+
+	smsStorageInit();
+	smsCoreInit();
 
 	menuSystemInit(getRtcTime_custom());
 
@@ -1031,6 +1098,7 @@ void applicationMainTask(void)
 
 				if ((trxGetMode() != RADIO_MODE_NONE) &&
 						(settingsUsbMode != USB_MODE_HOTSPOT) &&
+						(HRC6000IsSendingSMS() == false) && // no voice TX while a message is being sent
 						(currentMenu != UI_POWER_OFF) &&
 						(currentMenu != UI_SPLASH_SCREEN) &&
 						(currentMenu != UI_TX_SCREEN)&&
@@ -1379,6 +1447,9 @@ void applicationMainTask(void)
 		voxTick();
 		gpsTick();
 		aprsBeaconingTick(&ev);
+		smsCoreTick();
+		smsStorageTick();
+		smsHandleEvents();
 		settingsSaveIfNeeded(false);
 
 		if (settingsIsOptionBitSet(BIT_DISPLAY_TIME_IN_HEADER))

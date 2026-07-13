@@ -329,6 +329,22 @@ const stringsTable_t germanLanguage =
 .mute					= "Mute", // MaxLen: 16 (with ':' + .on or .off)
 .delete_channel			= "Kanal löschen", // MaxLen: 16
 .keep_one_channel		= "1 Kanal behalten", // MaxLen: 16
+.messages						= "Nachrichten", // MaxLen: 16
+.new_message					= "Neue Nachricht", // MaxLen: 16
+.inbox						= "Posteingang", // MaxLen: 16
+.sent_box						= "Gesendet", // MaxLen: 16
+.quick_text					= "Schnelltext", // MaxLen: 16
+.send_to						= "Senden an", // MaxLen: 16
+.sms_sending					= "Sende...", // MaxLen: 16
+.sms_sent						= "Gesendet", // MaxLen: 16
+.sms_delivered				= "Zugestellt", // MaxLen: 16
+.sms_no_ack					= "Kein ACK", // MaxLen: 16
+.sms_resend					= "Nochmal senden?", // MaxLen: 16
+.sms_channel_busy				= "Kanal belegt", // MaxLen: 16
+.sms_wait_for_ack				= "Auf ACK warten", // MaxLen: 16
+.sms_own_id_only				= "Nur eigene ID", // MaxLen: 16
+.message_from					= "Nachricht von", // MaxLen: 16
+.delete_message				= "Nachricht lösch.", // MaxLen: 16
 };
 /********************************************************************
  *

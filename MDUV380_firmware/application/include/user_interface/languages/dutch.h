@@ -329,6 +329,22 @@ const stringsTable_t dutchLanguage =
 .mute					= "Mute", // MaxLen: 16 (with ':' + .on or .off)
 .delete_channel			= "Kanaal wissen", // MaxLen: 16
 .keep_one_channel		= "Hou 1 kanaal", // MaxLen: 16
+.messages						= "Berichten", // MaxLen: 16
+.new_message					= "Nieuw bericht", // MaxLen: 16
+.inbox						= "Postvak in", // MaxLen: 16
+.sent_box						= "Verzonden", // MaxLen: 16
+.quick_text					= "Snelle tekst", // MaxLen: 16
+.send_to						= "Sturen naar", // MaxLen: 16
+.sms_sending					= "Verzenden...", // MaxLen: 16
+.sms_sent						= "Verzonden", // MaxLen: 16
+.sms_delivered				= "Afgeleverd", // MaxLen: 16
+.sms_no_ack					= "Geen ACK", // MaxLen: 16
+.sms_resend					= "Opnieuw?", // MaxLen: 16
+.sms_channel_busy				= "Kanaal bezet", // MaxLen: 16
+.sms_wait_for_ack				= "Wacht op ACK", // MaxLen: 16
+.sms_own_id_only				= "Alleen mijn ID", // MaxLen: 16
+.message_from					= "Bericht van", // MaxLen: 16
+.delete_message				= "Bericht wissen?", // MaxLen: 16
 };
 /********************************************************************
  *
