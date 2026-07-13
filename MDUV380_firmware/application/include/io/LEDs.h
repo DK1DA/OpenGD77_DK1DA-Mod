@@ -47,6 +47,7 @@ void torchToggle(void);
 #endif
 
 void LedWrite(LEDs_t theLED, uint8_t output);
+void LedGreenSuppress(bool suppress); // hold the green LED off regardless of other writers
 uint8_t LedRead(LEDs_t theLED);
 void LedWriteDirect(LEDs_t theLED, uint8_t output);
 
