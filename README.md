@@ -36,8 +36,8 @@ OpenGD77_DK1DA-Mod keeps OpenGD77's core (DMR/FM, hotspot, CPS compatibility) an
 - **Screen dimming** — optionally dim the backlight to 100 / 50 / 30 / 15 % after
   inactivity (Auto backlight mode); new setting in Display Options.
 - **Theme presets** — pick a colour theme on the radio: **Custom** (CPS-editable,
-  default), **BASIC 80s** (Commodore 64), or **Terminal** (green-on-black). CPS edits
-  only affect Custom.
+  default), **BASIC 80s** (Commodore 64), **Terminal** (green-on-black), or
+  **Vertexic** (amber/orange). CPS edits only affect Custom.
 - **On-radio channel management** — create and delete channels directly from the
   Channel quick menu, no PC/CPS required (see [Managing channels](#managing-channels-on-the-radio)).
 - **Main-menu icons** next to each top-level entry.

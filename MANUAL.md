@@ -65,6 +65,7 @@ Pick a colour theme on the radio at **Menu → Options → Display Options → "
 - **Custom** — the theme edited via the CPS or the on-radio colour editor (default).
 - **BASIC 80s** — a Commodore-64 look (light blue on blue).
 - **Terminal** — a green terminal (green-on-black at night, black-on-green by day).
+- **Vertexic** — amber/orange (black-on-amber by day, amber-on-black at night).
 
 Editing colours in the CPS only affects **Custom**; the two built-in presets are
 fixed. Every element (S-meter, frequencies, menus) follows the selected theme.

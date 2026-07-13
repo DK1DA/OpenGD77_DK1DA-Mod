@@ -9,7 +9,8 @@ single running list until the first versioned release.
 
 - **Theme presets** — selectable on the radio in Display Options → "Theme":
   **Custom** (CPS-editable, default), **BASIC 80s** (Commodore 64 blue/light-blue),
-  and **Terminal** (green-on-black night / black-on-green day). The choice is stored
+  **Terminal** (green-on-black night / black-on-green day), and **Vertexic**
+  (amber/orange, black-on-amber day / amber-on-black night). The choice is stored
   in the codeplug custom-data area (migration-safe; defaults to Custom), and CPS
   theme edits only ever change Custom.
 - **Fix:** green LED **flickering** between the red flashes while muted during a DMR

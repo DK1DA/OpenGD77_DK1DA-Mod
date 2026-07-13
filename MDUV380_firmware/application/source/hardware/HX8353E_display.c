@@ -1548,6 +1548,11 @@ void themeApplyPreset(uint8_t preset)
 			themeSetAllItems(NIGHT, 0x00E000, 0x000000); // green on black
 			break;
 
+		case THEME_PRESET_VERTEXIC: // orange (Vertex-style)
+			themeSetAllItems(DAY,   0x000000, 0xFF6A00); // black on orange
+			themeSetAllItems(NIGHT, 0xFF6A00, 0x000000); // orange on black
+			break;
+
 		case THEME_PRESET_CUSTOM:
 		default:
 			// Overlay the user's Custom theme from the codeplug, if present (CPS edits

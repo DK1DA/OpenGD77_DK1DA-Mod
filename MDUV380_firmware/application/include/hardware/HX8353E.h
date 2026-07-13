@@ -276,6 +276,7 @@ typedef enum
 	THEME_PRESET_CUSTOM = 0, // editable via CPS / on-device colour editor
 	THEME_PRESET_BASIC80S,   // Commodore 64 BASIC (light blue on blue)
 	THEME_PRESET_TERMINAL,   // green terminal (green-on-black night / black-on-green day)
+	THEME_PRESET_VERTEXIC,   // amber/orange (black-on-amber day / amber-on-black night)
 	NUM_THEME_PRESETS
 } themePreset_t;
 
