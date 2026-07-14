@@ -6,8 +6,8 @@ chipset — the **TYT MD-UV380 / Retevis RT-3S** and **Baofeng DM-1701 / Retevis
 RT-84**.
 
 It adds a number of UI and quality-of-life changes on top of OpenGD77 (segmented
-S-meter, 7-segment frequency font, screen dimming, an audio-mute function, menu
-icons, on-radio channel editing, and more).
+S-meter, 7-segment frequency font, screen dimming, an audio-mute function,
+DMR text messaging, colour theme presets, on-radio channel editing, and more).
 
 📖 **[`MANUAL.md`](MANUAL.md)** is the full feature & usage guide — every feature is
 tagged 🟢 **[OpenGD77_DK1DA-Mod]** (new/changed here) or ⚪ **[OpenGD77]** (inherited). See
@@ -35,9 +35,14 @@ OpenGD77_DK1DA-Mod keeps OpenGD77's core (DMR/FM, hotspot, CPS compatibility) an
 - **7-segment "LED" frequency font** on the VFO and the SK1-held frequency view.
 - **Screen dimming** — optionally dim the backlight to 100 / 50 / 30 / 15 % after
   inactivity (Auto backlight mode); new setting in Display Options.
+- **DMR text messages (SMS)** — send and receive text messages on the radio,
+  compatible with BrandMeister, hotspots and OEM radios. Compose on the keypad,
+  inbox/sent boxes, quick-text templates, delivery confirmation and an
+  incoming-message popup (see the manual for details).
 - **Theme presets** — pick a colour theme on the radio: **Custom** (CPS-editable,
-  default), **BASIC 80s** (Commodore 64), **Terminal** (green-on-black), or
-  **Vertexic** (amber/orange). CPS edits only affect Custom.
+  default), **BASIC 80s** (Commodore 64), **Terminal** (green-on-black),
+  **Vertexic** (amber/orange), **Red**, or **Neon 80s** (multi-colour synthwave).
+  CPS edits only affect Custom.
 - **On-radio channel management** — create and delete channels directly from the
   Channel quick menu, no PC/CPS required (see [Managing channels](#managing-channels-on-the-radio)).
 - **DMR reliability fix** — resolves a hard-fault (freeze needing a battery pull)

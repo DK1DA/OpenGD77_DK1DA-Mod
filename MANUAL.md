@@ -67,8 +67,11 @@ Pick a colour theme on the radio at **Menu → Options → Display Options → "
 - **BASIC 80s** — a Commodore-64 look (light blue on blue).
 - **Terminal** — a green terminal (green-on-black at night, black-on-green by day).
 - **Vertexic** — amber/orange (black-on-amber by day, amber-on-black at night).
+- **Red** — black-on-red by day, red-on-black at night.
+- **Neon 80s** — an 80s-synthwave palette with several neon colours (cyan,
+  magenta, violet, green, yellow) across the UI over a dark background.
 
-Editing colours in the CPS only affects **Custom**; the two built-in presets are
+Editing colours in the CPS only affects **Custom**; the built-in presets are
 fixed. Every element (S-meter, frequencies, menus) follows the selected theme.
 
 ### Mute indicator — 🟢 [OpenGD77_DK1DA-Mod]
@@ -180,7 +183,7 @@ cycles; unread messages are marked `*`. In a message view, **GREEN**
 replies (inbox) or re-edits/resends (sent), **SK2+RED** deletes. The radio
 automatically answers delivery-report requests from other radios.
 
-**Quick texts:** 10 editable templates (**GREEN** uses one in a new message,
+**Quick texts:** up to 8 editable templates (**GREEN** uses one in a new message,
 **SK2+GREEN** edits, **SK2+RED** deletes).
 
 **Options:** *Wait for ACK* (delivery confirmation) and *My ID only*
