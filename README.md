@@ -41,8 +41,8 @@ OpenGD77_DK1DA-Mod keeps OpenGD77's core (DMR/FM, hotspot, CPS compatibility) an
   incoming-message popup (see the manual for details).
 - **Theme presets** — pick a colour theme on the radio: **Custom** (CPS-editable,
   default), **BASIC 80s** (Commodore 64), **Terminal** (green-on-black),
-  **Vertexic** (amber/orange), **Red**, or **Neon 80s** (multi-colour synthwave).
-  CPS edits only affect Custom.
+  **Vertexic** (amber/orange), **Red**, **Neon 80s** (multi-colour synthwave),
+  or **Pride** (rainbow background). CPS edits only affect Custom.
 - **On-radio channel management** — create and delete channels directly from the
   Channel quick menu, no PC/CPS required (see [Managing channels](#managing-channels-on-the-radio)).
 - **DMR reliability fix** — resolves a hard-fault (freeze needing a battery pull)

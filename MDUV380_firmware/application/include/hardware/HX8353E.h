@@ -279,6 +279,7 @@ typedef enum
 	THEME_PRESET_VERTEXIC,   // amber/orange (black-on-amber day / amber-on-black night)
 	THEME_PRESET_RED,        // red (black-on-red day / red-on-black night)
 	THEME_PRESET_NEON80S,    // 80s synthwave: cyan/magenta/violet/green neon on dark
+	THEME_PRESET_PRIDE,      // pride flag: black text + white chrome over a rainbow background
 	NUM_THEME_PRESETS
 } themePreset_t;
 

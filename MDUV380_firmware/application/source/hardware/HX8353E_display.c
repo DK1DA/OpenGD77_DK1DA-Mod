@@ -67,6 +67,21 @@ static uint16_t backgroundColour = 0xFFFFU;
 
 static uint16_t screenBufData[DISPLAY_SIZE_X * DISPLAY_SIZE_Y];
 uint16_t *screenBuf = screenBufData;
+
+#if defined(HAS_COLOURS)
+// When the Pride theme is active the background canvas is painted as six
+// horizontal rainbow stripes instead of a single flat colour.
+static bool prideBackgroundActive = false;
+static uint16_t prideStripes[6];
+
+// Pride stripe colour for a linear screen-buffer index (row = index / width).
+static inline uint16_t pridePixelColour(int index)
+{
+	int band = ((index / DISPLAY_SIZE_X) * 6) / DISPLAY_SIZE_Y;
+
+	return prideStripes[(band < 0) ? 0 : ((band > 5) ? 5 : band)];
+}
+#endif
 //#define DISPLAY_CHECK_BOUNDS
 
 #ifdef DISPLAY_CHECK_BOUNDS
@@ -326,6 +341,16 @@ int displayPrintCoreDoubleHeight(int16_t xPos, int16_t yPos, const char *szMsg, 
 
 void displayClearBuf(void)
 {
+#if defined(HAS_COLOURS)
+	if (prideBackgroundActive)
+	{
+		for (int i = 0; i < DISPLAY_SIZE_X * DISPLAY_SIZE_Y; i++)
+		{
+			screenBuf[i] = pridePixelColour(i);
+		}
+		return;
+	}
+#endif
 	// may be able to do this using DMA
 	for(int i = 0; i < DISPLAY_SIZE_X * DISPLAY_SIZE_Y; i++)
 	{
@@ -353,7 +378,11 @@ void displayClearRows(int16_t startRow, int16_t endRow, bool isInverted)
 
 	for(int i = startRow; i < endRow; i++)
 	{
+#if defined(HAS_COLOURS)
+		screenBuf[i] = ((prideBackgroundActive && (isInverted == false)) ? pridePixelColour(i) : fillColour);
+#else
 		screenBuf[i] = fillColour;
+#endif
 	}
 
 }
@@ -1584,11 +1613,26 @@ static void themeSetNeon80s(DayTime_t daytime, uint32_t bg)
 	themeSetItem(daytime, THEME_ITEM_FG_BD_COLOUR,        orange);
 }
 
+// Pride: the background canvas is painted as a rainbow (see pridePixelColour);
+// the theme items only need black text plus white "chrome" boxes (menu title,
+// header, notifications) so those stay readable over any stripe. The selected
+// menu row already inverts to a black bar with white text.
+static void themeSetPride(DayTime_t daytime)
+{
+	themeSetAllItems(daytime, 0x000000, 0xFFFFFF); // black text, white chrome backgrounds
+
+	// Keep warning/error notifications colour-coded on their white box.
+	themeSetItem(daytime, THEME_ITEM_FG_WARNING_NOTIFICATION, 0xC07800);
+	themeSetItem(daytime, THEME_ITEM_FG_ERROR_NOTIFICATION,   0xC00000);
+}
+
 void themeApplyPreset(uint8_t preset)
 {
 	// Start from the monochrome defaults, then overlay the chosen preset.
 	themeInitToDefaultValues(NIGHT, true);
 	themeInitToDefaultValues(DAY, false);
+
+	prideBackgroundActive = false; // only the Pride preset re-enables the rainbow canvas
 
 	switch (preset)
 	{
@@ -1615,6 +1659,22 @@ void themeApplyPreset(uint8_t preset)
 		case THEME_PRESET_NEON80S: // 80s synthwave neon on dark
 			themeSetNeon80s(DAY,   0x1B0B2E); // dark indigo
 			themeSetNeon80s(NIGHT, 0x08040F); // near-black purple
+			break;
+
+		case THEME_PRESET_PRIDE: // rainbow background canvas
+			{
+				// Classic 6-stripe pride flag; blue/violet lightened a little so
+				// black text stays legible over the lower stripes.
+				static const uint32_t prideRGB[6] = { 0xE40303, 0xFF8C00, 0xFFED00, 0x22A93F, 0x3D7DF0, 0xB05CD6 };
+
+				for (int s = 0; s < 6; s++)
+				{
+					prideStripes[s] = PLATFORM_COLOUR_FORMAT_SWAP_BYTES(RGB888_TO_PLATFORM_COLOUR_FORMAT(prideRGB[s]));
+				}
+				prideBackgroundActive = true;
+				themeSetPride(DAY);
+				themeSetPride(NIGHT);
+			}
 			break;
 
 		case THEME_PRESET_CUSTOM:

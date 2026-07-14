@@ -70,6 +70,11 @@ Pick a colour theme on the radio at **Menu → Options → Display Options → "
 - **Red** — black-on-red by day, red-on-black at night.
 - **Neon 80s** — an 80s-synthwave palette with several neon colours (cyan,
   magenta, violet, green, yellow) across the UI over a dark background.
+- **Pride** — the background is painted as a rainbow pride flag; body text is
+  black over the stripes, and the menu title, header and notifications use white
+  boxes so they stay readable. (Text drawn directly over the brightest stripes
+  has lower contrast than a solid-background theme — that's inherent to a
+  rainbow background.)
 
 Editing colours in the CPS only affects **Custom**; the built-in presets are
 fixed. Every element (S-meter, frequencies, menus) follows the selected theme.

@@ -7,10 +7,15 @@ single running list until the first versioned release.
 
 ## Unreleased
 
-- **Two new theme presets** (Display Options → "Theme"): **Red** (black-on-red
-  day / red-on-black night) and **Neon 80s**, an 80s-synthwave palette that maps
+- **Three new theme presets** (Display Options → "Theme"): **Red** (black-on-red
+  day / red-on-black night); **Neon 80s**, an 80s-synthwave palette that maps
   several neon colours (cyan, magenta, violet, green, yellow) across the
-  individual UI elements over a dark background.
+  individual UI elements over a dark background; and **Pride**, which paints the
+  background as a rainbow pride flag with black text and white menu/header boxes
+  kept readable over the stripes.
+- **Build:** each build now prints a per-region memory-usage summary
+  (FLASH / RAM / CCMRAM used, size and free) so the remaining headroom is
+  visible after every build.
 
 ## 0.7.1
 
