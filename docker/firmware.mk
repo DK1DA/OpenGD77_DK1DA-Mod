@@ -63,6 +63,7 @@ ASFLAGS := $(CPU) -x assembler-with-cpp -DDEBUG -g3 -MMD -MP
 LDSCRIPT := ../STM32F405VGTX_FLASH.ld
 LDFLAGS := $(CPU) -T$(LDSCRIPT) --specs=nano.specs \
 	-Wl,-Map=$(TARGET).map,--cref -Wl,--gc-sections -static \
+	-Wl,--print-memory-usage \
 	-Wl,--start-group -lc -lm -Wl,--end-group
 
 # ---- Sources --------------------------------------------------------------
