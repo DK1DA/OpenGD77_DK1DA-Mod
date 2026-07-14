@@ -159,6 +159,11 @@ Talkgroups/contacts, timeslots, colour codes, RX groups, and hotspot mode, all p
 upstream OpenGD77. The AMBE voice codec is merged in at flash time (see
 [`TOOLS.md`](TOOLS.md)).
 
+### Contacts list — 🟢 [OpenGD77_DK1DA-Mod]
+**Menu → Contacts** lists all contact types together under the title "Contacts"
+(instead of defaulting to the group filter). Press **`#`** to cycle the filter:
+all → groups → private → all-call → all.
+
 ### DMR reliability fix — 🟢 [OpenGD77_DK1DA-Mod]
 OpenGD77_DK1DA-Mod resolves a hard-fault (freeze needing a battery pull) on the DMR path that
 affected recent self-built OpenGD77 revisions — the codec is called through C
@@ -202,7 +207,7 @@ second or two a message is on air; hotspot mode is unaffected.
 ## About & versioning — 🟢 [OpenGD77_DK1DA-Mod]
 
 **Menu → Firmware info** shows the **OpenGD77_DK1DA-Mod version** (semantic versioning, e.g.
-`OpenGD77_DK1DA-Mod v0.4.0`) alongside the git commit ID. Pre-1.0 builds are published as
+`OpenGD77_DK1DA-Mod v0.10.0`) alongside the git commit ID. Pre-1.0 builds are published as
 pre-releases. See [`CHANGELOG.md`](CHANGELOG.md) for the full history.
 
 ---

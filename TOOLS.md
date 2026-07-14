@@ -34,6 +34,10 @@ Output: `MDUV380_firmware/build/Open<platform>.bin` (the flashable, FM-only imag
 codec is merged in at flash time — see below). The build is always clean (`rm -rf build`),
 so building one platform overwrites the other's output.
 
+Each build finishes with a **memory-usage summary** — used, size and free bytes for the
+FLASH (code), RAM and CCMRAM regions — so the remaining headroom for new features is
+visible at a glance.
+
 ---
 
 ## 3. Flashing

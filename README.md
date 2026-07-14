@@ -36,9 +36,10 @@ OpenGD77_DK1DA-Mod keeps OpenGD77's core (DMR/FM, hotspot, CPS compatibility) an
 - **Screen dimming** — optionally dim the backlight to 100 / 50 / 30 / 15 % after
   inactivity (Auto backlight mode); new setting in Display Options.
 - **DMR text messages (SMS)** — send and receive text messages on the radio,
-  compatible with BrandMeister, hotspots and OEM radios. Compose on the keypad,
-  inbox/sent boxes, quick-text templates, delivery confirmation and an
-  incoming-message popup (see the manual for details).
+  compatible with BrandMeister, hotspots and OEM radios. Compose on the keypad
+  (or pick the recipient from your contacts), inbox/sent boxes, quick-text
+  templates, delivery confirmation and an incoming-message popup (see the manual
+  for details).
 - **Theme presets** — pick a colour theme on the radio: **Custom** (CPS-editable,
   default), **BASIC 80s** (Commodore 64), **Terminal** (green-on-black),
   **Vertexic** (amber/orange), **Red**, **Neon 80s** (multi-colour synthwave),
