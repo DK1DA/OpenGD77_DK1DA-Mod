@@ -328,6 +328,7 @@ enum MENU_SCREENS
 	MENU_SMS_VIEW,
 	MENU_SMS_QUICKTEXT,
 	MENU_SMS_OPTIONS,
+	MENU_SMS_CONTACT,
 	UI_SMS_RX_POPUP,
 	UI_MESSAGE_BOX,
 	UI_HOTSPOT_MODE,
@@ -497,8 +498,10 @@ menuStatus_t menuSMSCompose(uiEvent_t *ev, bool isFirstRun);
 menuStatus_t menuSMSList(uiEvent_t *ev, bool isFirstRun); // serves inbox, sent and view
 menuStatus_t menuSMSQuickText(uiEvent_t *ev, bool isFirstRun);
 menuStatus_t menuSMSOptions(uiEvent_t *ev, bool isFirstRun);
+menuStatus_t menuSMSContact(uiEvent_t *ev, bool isFirstRun); // pick an SMS recipient from the DMR contacts
 menuStatus_t uiSMSPopup(uiEvent_t *ev, bool isFirstRun);
 void menuSMSComposePrefill(uint32_t dstId, const char *text); // 0 / NULL leave the field untouched
+void menuSMSComposeSetDestination(uint32_t dstId);            // set only the recipient, keep any typed text
 void menuSMSComposeSetQuickTextEditTarget(int slotIndex);     // compose edits a quick text instead of sending
 void menuSMSListSetViewTarget(bool sentBox, uint8_t recordIndex);
 

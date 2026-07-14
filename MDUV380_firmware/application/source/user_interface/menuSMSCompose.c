@@ -50,6 +50,11 @@ static int quickTextEditSlot = -1;
 static bool prefillPending = false;
 static int pendingQuickTextEditSlot = -1;
 
+// set while the contact picker is open, so returning from it preserves the
+// typed text and only moves to the message field when a contact was chosen
+static bool pickerReturnPending = false;
+static bool pickerSelected = false;
+
 static menuStatus_t menuSMSComposeExitCode = MENU_STATUS_SUCCESS;
 
 static void updateScreen(void);
@@ -72,6 +77,18 @@ void menuSMSComposePrefill(uint32_t dstId, const char *text)
 	}
 
 	prefillPending = true;
+}
+
+void menuSMSComposeSetDestination(uint32_t dstId)
+{
+	if (dstId != 0)
+	{
+		snprintf(destDigits, sizeof(destDigits), "%u", (unsigned int)dstId);
+	}
+
+	// a contact was chosen in the picker: on return, keep the text and move
+	// the focus to the message field
+	pickerSelected = true;
 }
 
 void menuSMSComposeSetQuickTextEditTarget(int slotIndex)
@@ -100,6 +117,19 @@ menuStatus_t menuSMSCompose(uiEvent_t *ev, bool isFirstRun)
 			}
 
 			focusedField = FIELD_TEXT;
+		}
+		else if (pickerReturnPending)
+		{
+			// returning from the contact picker: keep the typed text and
+			// recipient; only advance to the message field if a contact was
+			// actually selected (a cancel stays on the recipient field)
+			if (pickerSelected)
+			{
+				focusedField = FIELD_TEXT;
+			}
+
+			pickerReturnPending = false;
+			pickerSelected = false;
 		}
 		else
 		{
@@ -237,7 +267,24 @@ static void handleEvent(uiEvent_t *ev)
 		}
 		else if (KEYCHECK_SHORTUP(ev->keys, KEY_GREEN))
 		{
-			sendOrSave();
+			if (quickTextEditSlot >= 0)
+			{
+				sendOrSave(); // save the quick-text template
+			}
+			else if (focusedField == FIELD_DESTINATION)
+			{
+				// in the recipient field, GREEN opens the contact picker;
+				// preserve any typed text/recipient whether the picker returns
+				// a selection or is cancelled
+				keypadAlphaEnable = false;
+				pickerReturnPending = true;
+				pickerSelected = false;
+				menuSystemPushNewMenu(MENU_SMS_CONTACT);
+			}
+			else
+			{
+				sendOrSave(); // send the message
+			}
 			return;
 		}
 		else if (KEYCHECK_PRESS(ev->keys, KEY_UP) && (quickTextEditSlot < 0))

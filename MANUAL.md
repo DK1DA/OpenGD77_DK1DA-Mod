@@ -174,12 +174,14 @@ decoded on receive).
 screen. The hub offers *New message*, *Inbox*, *Sent*, *Quick text* and
 *Options*.
 
-**Composing:** enter the destination DMR ID with the number keys (**UP/DOWN**
-switches between the ID and text fields), type up to 160 characters with
-multi-tap on the keypad (**LEFT/RIGHT** move the cursor, **SK2+LEFT** deletes),
-then press **GREEN** to send. Sending only works on a DMR channel; progress is
-shown as notifications ("Sending", "Sent", "Delivered"). With **Wait for ACK**
-enabled (default), a missing delivery report pops up a **resend** prompt.
+**Composing:** in the recipient field, either type the destination DMR ID with
+the number keys and press **DOWN** to move on to the message, or press **GREEN**
+to pick a recipient from your private-call DMR contacts (selecting one drops you
+straight into the message text). Type up to 160 characters with multi-tap on the
+keypad (**LEFT/RIGHT** move the cursor, **SK2+LEFT** deletes), then press
+**GREEN** to send. Sending only works on a DMR channel; progress is shown as
+notifications ("Sending", "Sent", "Delivered"). With **Wait for ACK** enabled
+(default), a missing delivery report pops up a **resend** prompt.
 
 **Receiving:** a popup with a chime shows the sender and a preview —
 **GREEN** opens the message, **SK2+GREEN** starts a reply, **RED** dismisses.

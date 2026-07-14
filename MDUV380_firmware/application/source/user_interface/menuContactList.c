@@ -62,6 +62,58 @@ static menuStatus_t menuContactListSubMenuExitCode = MENU_STATUS_SUCCESS;
 
 static const char *calltypeVoices[3] = { NULL, NULL, NULL };
 
+// Pseudo call-type for the digital list: show every contact (groups, private
+// calls and all-calls) together. This is the default; HASH still cycles the
+// per-type filters.
+#define CONTACT_LIST_COMBINED   0xFFU
+
+// Number of digital contacts under the current filter (all types when combined).
+static int digitalContactsCount(void)
+{
+	if (contactCallType == CONTACT_LIST_COMBINED)
+	{
+		return codeplugContactsGetCount(CONTACT_CALLTYPE_TG)
+				+ codeplugContactsGetCount(CONTACT_CALLTYPE_PC)
+				+ codeplugContactsGetCount(CONTACT_CALLTYPE_ALL);
+	}
+
+	return codeplugContactsGetCount(contactCallType);
+}
+
+// Fetch the (1-based) digital contact under the current filter. When combined,
+// the list runs groups first, then private calls, then all-calls.
+static int digitalContactGetForNumber(int number, CodeplugContact_t *c)
+{
+	if (contactCallType != CONTACT_LIST_COMBINED)
+	{
+		return codeplugContactGetDataForNumberInType(number, contactCallType, c);
+	}
+
+	int row = number - 1;
+	int count = codeplugContactsGetCount(CONTACT_CALLTYPE_TG);
+
+	if (row < count)
+	{
+		return codeplugContactGetDataForNumberInType(row + 1, CONTACT_CALLTYPE_TG, c);
+	}
+	row -= count;
+	count = codeplugContactsGetCount(CONTACT_CALLTYPE_PC);
+
+	if (row < count)
+	{
+		return codeplugContactGetDataForNumberInType(row + 1, CONTACT_CALLTYPE_PC, c);
+	}
+	row -= count;
+
+	return codeplugContactGetDataForNumberInType(row + 1, CONTACT_CALLTYPE_ALL, c);
+}
+
+// Voice/title label for the current filter.
+static const char *contactCallTypeLabel(void)
+{
+	return ((contactCallType == CONTACT_LIST_COMBINED) ? currentLanguage->contacts : calltypeVoices[contactCallType]);
+}
+
 // Apply contact + its TS on selection for TX (contact list of quick list).
 static void overrideWithSelectedContact(void)
 {
@@ -78,7 +130,7 @@ static void overrideWithSelectedContact(void)
 
 static void reloadContactList(contactListContactType_t type)
 {
-	menuDataGlobal.numItems = (type == MENU_CONTACT_LIST_CONTACT_DIGITAL) ? codeplugContactsGetCount(contactCallType) : codeplugDTMFContactsGetCount();
+	menuDataGlobal.numItems = (type == MENU_CONTACT_LIST_CONTACT_DIGITAL) ? digitalContactsCount() : codeplugDTMFContactsGetCount();
 
 	if (menuDataGlobal.numItems > 0)
 	{
@@ -87,7 +139,7 @@ static void reloadContactList(contactListContactType_t type)
 			menuDataGlobal.currentItemIndex = 0;
 		}
 		uiDataGlobal.currentSelectedContactIndex = (type == MENU_CONTACT_LIST_CONTACT_DIGITAL)
-				? codeplugContactGetDataForNumberInType(menuDataGlobal.currentItemIndex + 1, contactCallType, &contactListContactData)
+				? digitalContactGetForNumber(menuDataGlobal.currentItemIndex + 1, &contactListContactData)
 				: codeplugDTMFContactGetDataForNumber(menuDataGlobal.currentItemIndex + 1, &contactListDTMFContactData);
 	}
 	else
@@ -119,7 +171,7 @@ menuStatus_t menuContactList(uiEvent_t *ev, bool isFirstRun)
 				// Shows digital contact list if called from "contact list" menu entry, or from <SK2>+# in digital.
 				// Otherwise displays DTMF contact list
 				contactListType = ((currentMenu == MENU_CONTACT_LIST) || ((currentMenu == MENU_CONTACT_QUICKLIST) && (trxGetMode() != RADIO_MODE_ANALOG))) ? MENU_CONTACT_LIST_CONTACT_DIGITAL : MENU_CONTACT_LIST_CONTACT_DTMF;
-				contactCallType = CONTACT_CALLTYPE_TG;
+				contactCallType = CONTACT_LIST_COMBINED; // default: show all contact types together
 
 				dtmfSequenceReset();
 			}
@@ -146,7 +198,7 @@ menuStatus_t menuContactList(uiEvent_t *ev, bool isFirstRun)
 				{
 					voicePromptsAppendLanguageString(currentLanguage->dmr_contacts);
 					voicePromptsAppendPrompt(PROMPT_SILENCE);
-					voicePromptsAppendLanguageString(calltypeVoices[contactCallType]);
+					voicePromptsAppendLanguageString(contactCallTypeLabel());
 				}
 				else
 				{
@@ -158,7 +210,7 @@ menuStatus_t menuContactList(uiEvent_t *ev, bool isFirstRun)
 			{
 				if (contactListType == MENU_CONTACT_LIST_CONTACT_DIGITAL)
 				{
-					voicePromptsAppendLanguageString(calltypeVoices[contactCallType]);
+					voicePromptsAppendLanguageString(contactCallTypeLabel());
 					voicePromptsAppendPrompt(PROMPT_SILENCE);
 				}
 			}
@@ -210,7 +262,9 @@ static void updateScreen(bool isFirstRun)
 	switch (contactListDisplayState)
 	{
 		case MENU_CONTACT_LIST_DISPLAY:
-			menuDisplayTitle((char *) calltypeName[((contactListType == MENU_CONTACT_LIST_CONTACT_DIGITAL) ? contactCallType : 3)]);
+			menuDisplayTitle((contactListType != MENU_CONTACT_LIST_CONTACT_DIGITAL)
+					? (char *) calltypeName[3] // "DTMF"
+					: ((contactCallType == CONTACT_LIST_COMBINED) ? (char *) currentLanguage->contacts : (char *) calltypeName[contactCallType]));
 
 			if (menuDataGlobal.numItems == 0)
 			{
@@ -235,7 +289,7 @@ static void updateScreen(bool isFirstRun)
 					}
 
 					idx = (contactListType == MENU_CONTACT_LIST_CONTACT_DIGITAL)
-							? codeplugContactGetDataForNumberInType(mNum + 1, contactCallType, &contact)
+							? digitalContactGetForNumber(mNum + 1, &contact)
 							: codeplugDTMFContactGetDataForNumber(mNum + 1, &dtmfContact);
 
 					if (idx > 0)
@@ -323,7 +377,7 @@ static void handleEvent(uiEvent_t *ev)
 			{
 				menuSystemMenuIncrement(&menuDataGlobal.currentItemIndex, menuDataGlobal.numItems);
 				uiDataGlobal.currentSelectedContactIndex = (contactListType == MENU_CONTACT_LIST_CONTACT_DIGITAL)
-						? codeplugContactGetDataForNumberInType(menuDataGlobal.currentItemIndex + 1, contactCallType, &contactListContactData)
+						? digitalContactGetForNumber(menuDataGlobal.currentItemIndex + 1, &contactListContactData)
 						: codeplugDTMFContactGetDataForNumber(menuDataGlobal.currentItemIndex + 1, &contactListDTMFContactData);
 				voicePromptsInit();
 				updateScreen(false);
@@ -333,7 +387,7 @@ static void handleEvent(uiEvent_t *ev)
 			{
 				menuSystemMenuDecrement(&menuDataGlobal.currentItemIndex, menuDataGlobal.numItems);
 				uiDataGlobal.currentSelectedContactIndex = (contactListType == MENU_CONTACT_LIST_CONTACT_DIGITAL)
-						? codeplugContactGetDataForNumberInType(menuDataGlobal.currentItemIndex + 1, contactCallType, &contactListContactData)
+						? digitalContactGetForNumber(menuDataGlobal.currentItemIndex + 1, &contactListContactData)
 						: codeplugDTMFContactGetDataForNumber(menuDataGlobal.currentItemIndex + 1, &contactListDTMFContactData);
 				voicePromptsInit();
 				updateScreen(false);
@@ -343,11 +397,24 @@ static void handleEvent(uiEvent_t *ev)
 			{
 				if (contactListType == MENU_CONTACT_LIST_CONTACT_DIGITAL)
 				{
-					contactCallType = (contactCallType + 1) % (CONTACT_CALLTYPE_ALL + 1);
+					// cycle: all combined -> group -> private -> all-call -> combined
+					if (contactCallType == CONTACT_LIST_COMBINED)
+					{
+						contactCallType = CONTACT_CALLTYPE_TG;
+					}
+					else if (contactCallType == CONTACT_CALLTYPE_ALL)
+					{
+						contactCallType = CONTACT_LIST_COMBINED;
+					}
+					else
+					{
+						contactCallType = contactCallType + 1;
+					}
+					menuDataGlobal.currentItemIndex = 0;
 					reloadContactList(contactListType);
 
 					voicePromptsInit();
-					voicePromptsAppendLanguageString(calltypeVoices[contactCallType]);
+					voicePromptsAppendLanguageString(contactCallTypeLabel());
 					voicePromptsAppendPrompt(PROMPT_SILENCE);
 
 					updateScreen(false);

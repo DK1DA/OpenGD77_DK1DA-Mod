@@ -9,6 +9,16 @@ single running list until the first versioned release.
 
 _Nothing yet._
 
+## 0.10.0
+
+- **SMS recipient from contacts** — when composing a message, press **GREEN** in
+  the recipient field to pick the destination from your private-call DMR
+  contacts (or type a DMR ID manually and press **DOWN** to move to the text).
+- **Contacts list shows everything** — Menu → Contacts now lists all contact
+  types together under the title "Contacts" instead of defaulting to the group
+  filter; **HASH** still cycles the per-type filters (all / groups / private /
+  all-call).
+
 ## 0.9.0
 
 - **Pride theme** — the status/header bar and the menu title bar are now painted

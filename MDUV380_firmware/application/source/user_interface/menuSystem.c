@@ -98,6 +98,7 @@ menuDataGlobal_t menuDataGlobal =
 				NULL,// SMS view
 				NULL,// SMS quick texts
 				NULL,// SMS options
+				NULL,// SMS contact picker
 				NULL,// SMS RX popup
 				NULL,// MessageBox
 				NULL,// hotspot mode
@@ -164,6 +165,7 @@ static menuFunctionData_t menuFunctions[] =
 		{ menuSMSList,              NULL, NULL, 0 },// SMS view
 		{ menuSMSQuickText,         NULL, NULL, 0 },
 		{ menuSMSOptions,           NULL, NULL, 0 },
+		{ menuSMSContact,           NULL, NULL, 0 },
 		{ uiSMSPopup,               NULL, NULL, 0 },
 		{ uiMessageBox,             NULL, NULL, 0 },
 		{ menuHotspotMode,          NULL, NULL, 0 },
