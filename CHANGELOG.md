@@ -9,6 +9,12 @@ single running list until the first versioned release.
 
 _Nothing yet._
 
+## 0.9.0
+
+- **Pride theme** — the status/header bar and the menu title bar are now painted
+  in the top rainbow-stripe colour so they blend into the background instead of
+  showing as white boxes.
+
 ## 0.8.0
 
 - **Three new theme presets** (Display Options → "Theme"): **Red** (black-on-red
