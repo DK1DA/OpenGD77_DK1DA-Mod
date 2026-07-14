@@ -1621,6 +1621,12 @@ static void themeSetPride(DayTime_t daytime)
 {
 	themeSetAllItems(daytime, 0x000000, 0xFFFFFF); // black text, white chrome backgrounds
 
+	// Paint the status/header bar and the menu title bar in the top stripe
+	// colour (prideRGB[0]) so they blend into the rainbow instead of showing
+	// as white boxes.
+	themeSetItem(daytime, THEME_ITEM_BG_HEADER_TEXT, 0xE40303);
+	themeSetItem(daytime, THEME_ITEM_BG_MENU_NAME,   0xE40303);
+
 	// Keep warning/error notifications colour-coded on their white box.
 	themeSetItem(daytime, THEME_ITEM_FG_WARNING_NOTIFICATION, 0xC07800);
 	themeSetItem(daytime, THEME_ITEM_FG_ERROR_NOTIFICATION,   0xC00000);
