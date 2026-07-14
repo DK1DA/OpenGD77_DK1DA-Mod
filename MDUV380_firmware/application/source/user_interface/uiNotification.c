@@ -351,6 +351,15 @@ uiNotificationID_t uiNotificationGetId(void)
 	return notificationData.id;
 }
 
+#if defined(HAS_COLOURS)
+// Expose the full-screen offscreen buffer so the shutdown animation can borrow
+// it as scratch (no notification is active while powering off).
+uint16_t *uiNotificationGetOffscreenBuffer(void)
+{
+	return screenNotificationBufData;
+}
+#endif
+
 static void displayMessage(void)
 {
 	char msg[SCREEN_LINE_BUFFER_SIZE];

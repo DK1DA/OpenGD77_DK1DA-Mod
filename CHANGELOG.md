@@ -9,6 +9,12 @@ single running list until the first versioned release.
 
 _Nothing yet._
 
+## 0.11.0
+
+- **CRT-style shut-off animation** — when powering off, the current screen
+  collapses towards the middle (squeezed to a line, then a dot) like an old CRT
+  switching off, replacing the "Power Off" message. (Colour displays only.)
+
 ## 0.10.1
 
 - **Fix:** the muted **"M"** indicator in the status bar overlapped the GPS text

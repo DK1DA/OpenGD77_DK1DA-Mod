@@ -46,6 +46,8 @@ OpenGD77_DK1DA-Mod keeps OpenGD77's core (DMR/FM, hotspot, CPS compatibility) an
   or **Pride** (rainbow background). CPS edits only affect Custom.
 - **On-radio channel management** — create and delete channels directly from the
   Channel quick menu, no PC/CPS required (see [Managing channels](#managing-channels-on-the-radio)).
+- **CRT-style shut-off animation** — the current screen collapses to a line and
+  then a dot, like an old CRT switching off (replaces the "Power Off" message).
 - **DMR reliability fix** — resolves a hard-fault (freeze needing a battery pull)
   on the DMR path that affected recent self-built OpenGD77 revisions.
 

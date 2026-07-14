@@ -267,6 +267,9 @@ bool uiNotificationHasTimedOut(void);
 bool uiNotificationIsVisible(void);
 void uiNotificationHide(bool immediateRender);
 uiNotificationID_t uiNotificationGetId(void);
+#if defined(HAS_COLOURS)
+uint16_t *uiNotificationGetOffscreenBuffer(void); // full-screen scratch (borrowed by the shutdown animation)
+#endif
 
 
 #if defined(HAS_GPS)

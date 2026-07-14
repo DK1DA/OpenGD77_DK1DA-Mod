@@ -59,6 +59,11 @@ Optionally dims the backlight after inactivity to **100 / 50 / 30 / 15 %** of th
 configured brightness (only in **Auto** backlight mode). Any activity restores full
 brightness. Set it in **Menu → Options → Display Options → Screen Dim**.
 
+### Shut-off animation — 🟢 [OpenGD77_DK1DA-Mod]
+Powering off collapses whatever is on screen towards the middle — squeezed to a
+line, then a dot — like an old CRT switching off, in place of the "Power Off"
+message. (Once the animation starts, the power-off is committed.)
+
 ### Theme presets — 🟢 [OpenGD77_DK1DA-Mod]
 Pick a colour theme on the radio at **Menu → Options → Display Options → "Theme"**
 (◀/▶ to change; the screen updates live):

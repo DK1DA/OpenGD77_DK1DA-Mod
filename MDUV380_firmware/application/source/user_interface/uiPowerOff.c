@@ -25,18 +25,25 @@
  * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include <string.h>
 #include "user_interface/uiGlobals.h"
 #include "user_interface/menuSystem.h"
 #include "user_interface/uiLocalisation.h"
+#include "functions/ticks.h"
 #if defined(PLATFORM_MD9600) || defined(PLATFORM_MD380) || defined(PLATFORM_MDUV380) || defined(PLATFORM_RT84_DM1701) || defined(PLATFORM_MD2017)
 #include "interfaces/batteryAndPowerManagement.h"
 #include "hardware/radioHardwareInterface.h"
 #endif
 
+const uint32_t POWEROFF_DURATION_MILLISECONDS = 500;
+
+#if defined(HAS_COLOURS)
+static void crtShutdownAnimation(void);
+#else
+static uint32_t initialEventTime;
 static void updateScreen(void);
 static void handleEvent(uiEvent_t *ev);
-static uint32_t initialEventTime;
-const uint32_t POWEROFF_DURATION_MILLISECONDS = 500;
+#endif
 
 menuStatus_t uiPowerOff(uiEvent_t *ev, bool isFirstRun)
 {
@@ -49,23 +56,103 @@ menuStatus_t uiPowerOff(uiEvent_t *ev, bool isFirstRun)
 		}
 #endif
 
+#if defined(HAS_COLOURS)
+		// Old-CRT-style collapse of whatever is currently on screen; replaces
+		// the "Power Off" / 73 message, then shuts down.
+		crtShutdownAnimation();
+		powerOffFinalStage(false, false);
+#else
 		updateScreen();
 		initialEventTime = ev->time;
+#endif
 	}
 	else
 	{
+#if !defined(HAS_COLOURS)
 		handleEvent(ev);
+#endif
 	}
 	return MENU_STATUS_SUCCESS;
 }
 
+#if defined(HAS_COLOURS)
+static void crtShutdownAnimation(void)
+{
+	const int W = DISPLAY_SIZE_X;
+	const int H = DISPLAY_SIZE_Y;
+	const int cx = W / 2;
+	const int cy = H / 2;
+	const int VSTEPS = 12;
+	const int HSTEPS = 12;
+	const uint16_t white = 0xFFFF;
+
+	displayRestorePrimaryScreenBuffer();
+
+	uint16_t *fb = displayGetPrimaryScreenBuffer();
+	uint16_t *snap = uiNotificationGetOffscreenBuffer();
+
+	// snapshot the screen as it is right now
+	memcpy(snap, fb, W * H * sizeof(uint16_t));
+
+	// Phase 1: squeeze the whole image vertically into a thin central band.
+	for (int step = 1; step <= VSTEPS; step++)
+	{
+		int bandH = H - ((H - 2) * step) / VSTEPS; // 128 -> 2
+		int top = cy - (bandH / 2);
+
+		memset(fb, 0, W * H * sizeof(uint16_t));
+
+		for (int dy = 0; dy < bandH; dy++)
+		{
+			int srcY = (dy * H) / bandH;
+
+			if (srcY >= H)
+			{
+				srcY = H - 1;
+			}
+			memcpy(&fb[(top + dy) * W], &snap[srcY * W], W * sizeof(uint16_t));
+		}
+
+		displayRender();
+		vTaskDelay((15 / portTICK_PERIOD_MS));
+	}
+
+	// Phase 2: the band becomes a bright line that collapses horizontally.
+	for (int step = 1; step <= HSTEPS; step++)
+	{
+		int lineW = W - ((W - 2) * step) / HSTEPS; // 160 -> 2
+		int left = cx - (lineW / 2);
+
+		memset(fb, 0, W * H * sizeof(uint16_t));
+
+		for (int dx = 0; dx < lineW; dx++)
+		{
+			fb[((cy - 1) * W) + (left + dx)] = white;
+			fb[(cy * W) + (left + dx)] = white;
+		}
+
+		displayRender();
+		vTaskDelay((15 / portTICK_PERIOD_MS));
+	}
+
+	// Phase 3: a brief central dot, then black.
+	memset(fb, 0, W * H * sizeof(uint16_t));
+	fb[((cy - 1) * W) + (cx - 1)] = white;
+	fb[((cy - 1) * W) + cx] = white;
+	fb[(cy * W) + (cx - 1)] = white;
+	fb[(cy * W) + cx] = white;
+	displayRender();
+	vTaskDelay((70 / portTICK_PERIOD_MS));
+
+	memset(fb, 0, W * H * sizeof(uint16_t));
+	displayRender();
+}
+#endif
+
+#if !defined(HAS_COLOURS)
 static void updateScreen(void)
 {
-#if defined(HAS_COLOURS)
-	bool dblHeight = settingsIsOptionBitSet(BIT_UI_USES_DOUBLE_HEIGHT);
-#else
 	const bool dblHeight = false;
-#endif
 	uint16_t fontHeight = (FONT_SIZE_3_HEIGHT * (dblHeight ? 2 : 1));
 
 	displayClearBuf();
@@ -104,3 +191,4 @@ static void handleEvent(uiEvent_t *ev)
 	}
 
 }
+#endif
