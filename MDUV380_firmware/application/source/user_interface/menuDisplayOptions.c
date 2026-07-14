@@ -276,7 +276,7 @@ static void updateScreen(bool isFirstRun)
 				case DISPLAY_THEME_PRESET:
 					{
 						// Preset names are plain literals -> rightSideVar (voice-safe).
-						const char *presetNames[] = { "Custom", "BASIC 80s", "Terminal", "Vertexic" };
+						const char *presetNames[] = { "Custom", "BASIC 80s", "Terminal", "Vertexic", "Red", "Neon 80s" };
 						uint8_t p = themeGetPreset();
 						leftSide = "Theme";
 						snprintf(rightSideVar, SCREEN_LINE_BUFFER_SIZE, "%s", presetNames[(p < NUM_THEME_PRESETS) ? p : 0]);

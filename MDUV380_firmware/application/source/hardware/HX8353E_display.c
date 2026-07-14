@@ -1530,6 +1530,60 @@ static void themeSetAllItems(DayTime_t daytime, uint32_t fgRGB, uint32_t bgRGB)
 	// THEME_ITEM_BG_MENU_ITEM_SELECTED intentionally left = fg (inverts the selected row).
 }
 
+static void themeSetItem(DayTime_t daytime, themeItem_t item, uint32_t rgb)
+{
+	themeItems[daytime][item] = PLATFORM_COLOUR_FORMAT_SWAP_BYTES(RGB888_TO_PLATFORM_COLOUR_FORMAT(rgb));
+}
+
+// 80s synthwave: a dark background with several neon accents mapped onto the
+// individual UI elements. Both day and night use the same neon palette so the
+// look is preserved; only the background darkens for night.
+static void themeSetNeon80s(DayTime_t daytime, uint32_t bg)
+{
+	const uint32_t cyan    = 0x00F0FF;
+	const uint32_t magenta = 0xFF2CA5;
+	const uint32_t green   = 0x39FF14;
+	const uint32_t violet  = 0xB16CFF;
+	const uint32_t yellow  = 0xFFE600;
+	const uint32_t red     = 0xFF3131;
+	const uint32_t orange  = 0xFF7A18;
+
+	// Base: cyan text on the dark background, everything else overridden below.
+	themeSetAllItems(daytime, cyan, bg);
+
+	themeSetItem(daytime, THEME_ITEM_FG_DECORATION,           magenta); // borders / separators / drop shadow
+	themeSetItem(daytime, THEME_ITEM_FG_TEXT_INPUT,           green);
+	themeSetItem(daytime, THEME_ITEM_FG_SPLASHSCREEN,         magenta);
+
+	themeSetItem(daytime, THEME_ITEM_FG_NOTIFICATION,         cyan);
+	themeSetItem(daytime, THEME_ITEM_FG_WARNING_NOTIFICATION, yellow);
+	themeSetItem(daytime, THEME_ITEM_FG_ERROR_NOTIFICATION,   red);
+
+	themeSetItem(daytime, THEME_ITEM_FG_MENU_NAME,            magenta); // menu header
+	themeSetItem(daytime, THEME_ITEM_BG_MENU_ITEM_SELECTED,   magenta); // selected row = magenta bar
+	themeSetItem(daytime, THEME_ITEM_FG_OPTIONS_VALUE,        green);
+	themeSetItem(daytime, THEME_ITEM_FG_HEADER_TEXT,          violet);  // mode/PWR/battery header
+
+	themeSetItem(daytime, THEME_ITEM_FG_RSSI_BAR,             cyan);
+	themeSetItem(daytime, THEME_ITEM_FG_RSSI_BAR_S9P,         magenta); // over S9 turns hot pink
+
+	themeSetItem(daytime, THEME_ITEM_FG_CHANNEL_NAME,         yellow);
+	themeSetItem(daytime, THEME_ITEM_FG_CHANNEL_CONTACT,      magenta);
+	themeSetItem(daytime, THEME_ITEM_FG_CHANNEL_CONTACT_INFO, cyan);
+	themeSetItem(daytime, THEME_ITEM_FG_ZONE_NAME,            violet);
+
+	themeSetItem(daytime, THEME_ITEM_FG_RX_FREQ,             cyan);
+	themeSetItem(daytime, THEME_ITEM_FG_TX_FREQ,             red);
+	themeSetItem(daytime, THEME_ITEM_FG_CSS_SQL_VALUES,      green);
+	themeSetItem(daytime, THEME_ITEM_FG_TX_COUNTER,         yellow);
+
+	themeSetItem(daytime, THEME_ITEM_FG_POLAR_DRAWING,      violet);
+	themeSetItem(daytime, THEME_ITEM_FG_SATELLITE_COLOUR,   magenta);
+	themeSetItem(daytime, THEME_ITEM_FG_GPS_NUMBER,         cyan);
+	themeSetItem(daytime, THEME_ITEM_FG_GPS_COLOUR,        green);
+	themeSetItem(daytime, THEME_ITEM_FG_BD_COLOUR,        orange);
+}
+
 void themeApplyPreset(uint8_t preset)
 {
 	// Start from the monochrome defaults, then overlay the chosen preset.
@@ -1551,6 +1605,16 @@ void themeApplyPreset(uint8_t preset)
 		case THEME_PRESET_VERTEXIC: // orange (Vertex-style)
 			themeSetAllItems(DAY,   0x000000, 0xFF6A00); // black on orange
 			themeSetAllItems(NIGHT, 0xFF6A00, 0x000000); // orange on black
+			break;
+
+		case THEME_PRESET_RED:
+			themeSetAllItems(DAY,   0x000000, 0xFF0000); // black on red
+			themeSetAllItems(NIGHT, 0xFF0000, 0x000000); // red on black
+			break;
+
+		case THEME_PRESET_NEON80S: // 80s synthwave neon on dark
+			themeSetNeon80s(DAY,   0x1B0B2E); // dark indigo
+			themeSetNeon80s(NIGHT, 0x08040F); // near-black purple
 			break;
 
 		case THEME_PRESET_CUSTOM:

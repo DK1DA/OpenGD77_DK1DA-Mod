@@ -277,6 +277,8 @@ typedef enum
 	THEME_PRESET_BASIC80S,   // Commodore 64 BASIC (light blue on blue)
 	THEME_PRESET_TERMINAL,   // green terminal (green-on-black night / black-on-green day)
 	THEME_PRESET_VERTEXIC,   // amber/orange (black-on-amber day / amber-on-black night)
+	THEME_PRESET_RED,        // red (black-on-red day / red-on-black night)
+	THEME_PRESET_NEON80S,    // 80s synthwave: cyan/magenta/violet/green neon on dark
 	NUM_THEME_PRESETS
 } themePreset_t;
 

@@ -7,7 +7,10 @@ single running list until the first versioned release.
 
 ## Unreleased
 
-_Nothing yet._
+- **Two new theme presets** (Display Options → "Theme"): **Red** (black-on-red
+  day / red-on-black night) and **Neon 80s**, an 80s-synthwave palette that maps
+  several neon colours (cyan, magenta, violet, green, yellow) across the
+  individual UI elements over a dark background.
 
 ## 0.7.1
 
