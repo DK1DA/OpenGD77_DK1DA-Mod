@@ -1853,12 +1853,12 @@ void uiUtilityRenderQSOData(void)
 	displayThemeResetToDefault();
 }
 
-// Toggle the audio mute (speaker) state. The header shows a mute icon and the LED
-// flashes amber (see the main loop) while muted.
+// Toggle the audio mute (speaker) state. The flashing red LED (see the main
+// loop) indicates the muted state.
 void toggleAudioMute(void)
 {
 	audioAmpMute(!audioAmpIsMuted());
-	headerRowIsDirty = true; // refresh the header so the mute icon appears/clears
+	headerRowIsDirty = true;
 }
 
 void uiUtilityRenderHeader(bool isVFODualWatchScanning, bool isVFOSweepScanning, bool forceBatteryDisplay)
@@ -1878,8 +1878,6 @@ void uiUtilityRenderHeader(bool isVFODualWatchScanning, bool isVFOSweepScanning,
 	static uint32_t blinkTime = 0;
 	int radioMode = trxGetMode();
 	uint8_t powerLevel = trxGetPowerLevel();
-	// Muted either explicitly (SK2) or by the volume knob turned fully down (-99).
-	bool audioIsMuted = (audioAmpIsMuted() || (lastVolume == -99));
 	bool isPerChannelPower = (currentChannelData->libreDMR_Power != 0x00);
 	bool scanIsActive = (uiDataGlobal.Scan.active || uiDataGlobal.Scan.toneActive);
 	bool batteryIsLow = batteryIsLowWarning();
@@ -2000,7 +1998,7 @@ void uiUtilityRenderHeader(bool isVFODualWatchScanning, bool isVFOSweepScanning,
 				displayPrintCore(MODE_TEXT_X_OFFSET, DISPLAY_Y_POS_HEADER, buffer,
 						(((nonVolatileSettings.hotspotType != HOTSPOT_TYPE_OFF) && (uiDataGlobal.dmrDisabled == false)) ? FONT_SIZE_1_BOLD : FONT_SIZE_1), TEXT_ALIGN_LEFT, isInverted);
 
-				// (mute is shown by the header "M" indicator, not a strike-through)
+				// (mute is indicated by the flashing red LED, not a strike-through)
 			}
 
 			if ((aprsIsTransmittingOnSameQRG == false) && (monitorModeData.isEnabled == false) && (isVFOSweepScanning == false) && (isVFODualWatchScanning == false) &&
@@ -2068,7 +2066,7 @@ void uiUtilityRenderHeader(bool isVFODualWatchScanning, bool isVFOSweepScanning,
 
 						displayPrintCore(MODE_TEXT_X_OFFSET, DISPLAY_Y_POS_HEADER, (isVFODualWatchScanning ? "[DW]" : "DMR"), ((nonVolatileSettings.hotspotType != HOTSPOT_TYPE_OFF) ? FONT_SIZE_1_BOLD : FONT_SIZE_1), TEXT_ALIGN_LEFT, isInverted);
 
-						// (mute is shown by the header "M" indicator, not a strike-through)
+						// (mute is indicated by the flashing red LED, not a strike-through)
 					}
 
 					if (isVFODualWatchScanning == false)
@@ -2180,13 +2178,8 @@ void uiUtilityRenderHeader(bool isVFODualWatchScanning, bool isVFOSweepScanning,
 	bool displayTime = (settingsIsOptionBitSet(BIT_DISPLAY_TIME_IN_HEADER) && (forceBatteryDisplay == false) && (batteryIsLow == false));
 #endif
 #endif
-	// Mute indicator: bold "M" just left of the battery indicator.
-	if (audioIsMuted)
-	{
-		displayThemeApply(THEME_ITEM_FG_HEADER_TEXT, THEME_ITEM_BG_HEADER_TEXT);
-		displayPrintCore((DISPLAY_SIZE_X - 40), DISPLAY_Y_POS_HEADER, "M", FONT_SIZE_1_BOLD, TEXT_ALIGN_LEFT, false);
-		displayThemeResetToDefault();
-	}
+	// Mute state is indicated by the flashing red LED only; no header icon
+	// (it collided with the GPS text in the status bar).
 
 	// Display battery percentage/voltage
 	bool apoEnabled = (nonVolatileSettings.apo > 0);

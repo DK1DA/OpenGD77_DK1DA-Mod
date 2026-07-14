@@ -80,8 +80,7 @@ Editing colours in the CPS only affects **Custom**; the built-in presets are
 fixed. Every element (S-meter, frequencies, menus) follows the selected theme.
 
 ### Mute indicator — 🟢 [OpenGD77_DK1DA-Mod]
-While muted, a bold **"M"** appears in the status bar (just left of the battery)
-and the **red LED flashes** (0.5 s every 2 s). See *Mute* below.
+While muted, the **red LED flashes** (0.5 s every 2 s). See *Mute* below.
 
 ---
 

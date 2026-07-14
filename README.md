@@ -25,8 +25,8 @@ OpenGD77_DK1DA-Mod keeps OpenGD77's core (DMR/FM, hotspot, CPS compatibility) an
 
 - **Audio mute — new SK2 short-tap.** A short tap of **SK2** on the VFO/Channel
   screen toggles the speaker mute on and off. Turning the **volume knob fully
-  down** counts as muted too. While muted, a bold **"M"** appears in the status
-  bar (left of the battery) and the **red LED flashes** (0.5 s every 2 s). SK2's
+  down** counts as muted too. While muted, the **red LED flashes** (0.5 s every
+  2 s). SK2's
   existing roles are unchanged: held as a modifier, extra-long-press for
   monitor/squelch-off, and — while a DMR QSO is on screen — a tap still sets the
   TX talkgroup to the incoming one.

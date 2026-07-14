@@ -9,6 +9,12 @@ single running list until the first versioned release.
 
 _Nothing yet._
 
+## 0.10.1
+
+- **Fix:** the muted **"M"** indicator in the status bar overlapped the GPS text
+  when GPS was enabled. The header icon is removed; the muted state is shown by
+  the flashing red LED alone.
+
 ## 0.10.0
 
 - **SMS recipient from contacts** — when composing a message, press **GREEN** in
