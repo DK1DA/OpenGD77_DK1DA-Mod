@@ -118,8 +118,21 @@ A real-time signal-strength-vs-frequency graph centred on the VFO frequency.
 - The scope is **VFO-only** (not available in Channel mode).
 
 ### Scanning — ⚪ [OpenGD77]
-Channel and VFO scanning with hold/pause behaviour, per the upstream OpenGD77
-controls.
+**There are no scan lists.** Unlike the vendor CPS, OpenGD77 scans **the channels
+of the currently selected zone** — so a zone *is* the scan list. To scan a
+particular set of channels, put them in a zone and select it. The **All Channels**
+virtual zone scans every channel in the codeplug.
+
+- **Start/stop:** long-press **UP** on the Channel or VFO screen (**RED** stops).
+- **Exclude a channel:** **Menu → Channel details** (or **SK2 + green** on the
+  Channel screen) → **Zone Skip** (skipped when scanning a normal zone) and
+  **All Skip** (skipped when scanning *All Channels*).
+- **Settings:** **Menu → Options → Radio options** → **Scan delay**,
+  **Scan dwell**, **Scan mode** (Hold / Pause / Stop) and **Scan On Boot**.
+
+Note: in the codeplug these two skip flags reuse the old "Auto Scan" and "Lone
+Worker" bits, so a vendor CPS may label them differently — set them on the radio
+to avoid confusion.
 
 ### Quick menu — ⚪ [OpenGD77] (with 🟢 [OpenGD77_DK1DA-Mod] additions)
 Press the **top / orange** button to open the quick menu for the current screen
@@ -210,9 +223,10 @@ second or two a message is on air; hotspot mode is unaffected.
 
 ## About & versioning — 🟢 [OpenGD77_DK1DA-Mod]
 
-**Menu → Firmware info** shows the **OpenGD77_DK1DA-Mod version** (semantic versioning, e.g.
-`OpenGD77_DK1DA-Mod v0.10.0`) alongside the git commit ID. Pre-1.0 builds are published as
-pre-releases. See [`CHANGELOG.md`](CHANGELOG.md) for the full history.
+**Menu → Firmware info** shows the **OpenGD77_DK1DA-Mod version** (semantic versioning,
+`OpenGD77_DK1DA-Mod vMAJOR.MINOR.PATCH`) alongside the git commit ID. Pre-1.0 builds are
+published as pre-releases. See [`CHANGELOG.md`](CHANGELOG.md) for the full
+history.
 
 ---
 
