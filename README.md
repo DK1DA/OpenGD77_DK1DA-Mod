@@ -15,9 +15,15 @@ tagged 🟢 **[OpenGD77_DK1DA-Mod]** (new/changed here) or ⚪ **[OpenGD77]** (i
 
 ## Screenshots
 
-| Segmented S-meter & DMR call | 7-segment frequency display |
+| Segmented S-meter & DMR call | 7-segment frequency display | Main menu |
+| --- | --- | --- |
+| ![DMR channel showing the talkgroup, repeater name and the block S-meter](docs/images/screenshot-dmr.png) | ![VFO with the 7-segment frequency font](docs/images/screenshot-vfo.png) | ![Main menu with the Messages entry highlighted](docs/images/screenshot-menu.png) |
+
+| DMR text messages | Reading a received message |
 | --- | --- |
-| ![DMR call with the block S-meter](docs/images/screenshot-dmr.png) | ![VFO with the 7-segment frequency font](docs/images/screenshot-vfo.png) |
+| ![Messages menu: quick text, options, new message, inbox and sent](docs/images/screenshot-messages.png) | ![A received weather-report message from a BrandMeister service](docs/images/screenshot-message-view.png) |
+
+*Screens shown with the **Neon 80s** theme.*
 
 ## What's different from OpenGD77
 
