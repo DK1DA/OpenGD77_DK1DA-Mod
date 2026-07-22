@@ -1897,7 +1897,7 @@ void uiUtilityRenderHeader(bool isVFODualWatchScanning, bool isVFOSweepScanning,
 	UNUSED_PARAMETER(forceBatteryDisplay);
 #endif
 
-	if (settingsIsOptionBitSet(BIT_BATTERY_VOLTAGE_IN_HEADER))
+	if (settingsGetBatteryUnitDisplay() == BATTERY_UNIT_VOLTAGE)
 	{
 		getBatteryVoltage(&volts, &mvolts);
 
@@ -1911,6 +1911,7 @@ void uiUtilityRenderHeader(bool isVFODualWatchScanning, bool isVFOSweepScanning,
 	}
 	else
 	{
+		// Both the percentage and bars display modes need the battery percentage.
 		batteryPercentage = getBatteryPercentage();
 
 		if (batteryPercentage < 100)
@@ -2207,7 +2208,9 @@ void uiUtilityRenderHeader(bool isVFODualWatchScanning, bool isVFOSweepScanning,
 	else
 #endif
 	{
-		if (settingsIsOptionBitSet(BIT_BATTERY_VOLTAGE_IN_HEADER))
+		batteryUnitDisplay_t batteryUnit = settingsGetBatteryUnitDisplay();
+
+		if (batteryUnit == BATTERY_UNIT_VOLTAGE)
 		{
 			int16_t xV = (DISPLAY_SIZE_X - ((4 * 6) + 3));
 
@@ -2218,6 +2221,41 @@ void uiUtilityRenderHeader(bool isVFODualWatchScanning, bool isVFOSweepScanning,
 
 			snprintf(buffer, SCREEN_LINE_BUFFER_SIZE, "%1dV", mvolts);
 			displayPrintCore(xV + (6 * 2) + 3, DISPLAY_Y_POS_HEADER, buffer, (apoEnabled ? FONT_SIZE_1_BOLD : FONT_SIZE_1), TEXT_ALIGN_LEFT, ((batteryIsLow ? scanBlinkPhase : false)));
+		}
+		else if (batteryUnit == BATTERY_UNIT_BARS)
+		{
+			// Battery-shaped icon, right-aligned in the header: an outlined body with a
+			// terminal nub, holding up to 4 segments each representing 25% of charge.
+			const int16_t bodyW = 24;
+			const int16_t bodyH = 7;
+			const int16_t nubW = 2;
+			const int16_t nubH = 3;
+			const int16_t barW = 4;
+			const int16_t barGap = 1;
+			int16_t bx = (DISPLAY_SIZE_X - bodyW - nubW);
+			int16_t by = DISPLAY_Y_POS_HEADER;
+
+			// 0..4 filled segments (rounded to the nearest quarter).
+			int16_t filledBars = ((batteryPercentage + 12) / 25);
+			if (filledBars > 4)
+			{
+				filledBars = 4;
+			}
+			else if (filledBars < 0)
+			{
+				filledBars = 0;
+			}
+
+			// Body outline and terminal nub stay solid; only the fill blinks when low.
+			// NOTE: displayDrawRect uses isInverted==true for foreground (visible), whereas
+			// displayFillRect is the opposite (isInverted==false draws the foreground).
+			displayDrawRect(bx, by, bodyW, bodyH, true);
+			displayFillRect(bx + bodyW, by + ((bodyH - nubH) / 2), nubW, nubH, false);
+
+			for (int16_t b = 0; b < filledBars; b++)
+			{
+				displayFillRect(bx + 2 + (b * (barW + barGap)), by + 2, barW, (bodyH - 4), ((batteryIsLow ? scanBlinkPhase : false)));
+			}
 		}
 		else
 		{
@@ -3149,12 +3187,13 @@ void announceItemWithInit(bool init, voicePromptItem_t item, audioPromptThreshol
 			break;
 
 		case PROMPT_SEQUENCE_BATTERY:
-			if (settingsIsOptionBitSet(BIT_BATTERY_VOLTAGE_IN_HEADER))
+			if (settingsGetBatteryUnitDisplay() == BATTERY_UNIT_VOLTAGE)
 			{
 				announceBatteryVoltage();
 			}
 			else
 			{
+				// Bars mode maps to a charge percentage, so announce it as a percentage.
 				announceBatteryPercentage();
 			}
 			break;

@@ -129,7 +129,7 @@ typedef enum
 {
 	BIT_INVERSE_VIDEO               = (SETTINGS_BITS_BANK_0 | (1 << 0)),
 	BIT_PTT_LATCH                   = (SETTINGS_BITS_BANK_0 | (1 << 1)),
-	BIT_UNUSED_2                    = (SETTINGS_BITS_BANK_0 | (1 << 2)),
+	BIT_BATTERY_BARS_IN_HEADER      = (SETTINGS_BITS_BANK_0 | (1 << 2)), // companion to BIT_BATTERY_VOLTAGE_IN_HEADER: encodes the "Bars" battery display mode
 	BIT_BATTERY_VOLTAGE_IN_HEADER   = (SETTINGS_BITS_BANK_0 | (1 << 3)),
 	BIT_SETTINGS_UPDATED            = (SETTINGS_BITS_BANK_0 | (1 << 4)),
 	BIT_TX_RX_FREQ_LOCK             = (SETTINGS_BITS_BANK_0 | (1 << 5)),
@@ -410,6 +410,20 @@ void settingsDecUINT32(uint32_t *s, uint32_t v);
 void settingsSetOptionBit(bitfieldOptions_t bit, bool set);
 bool settingsIsOptionBitSetFromSettings(settingsStruct_t *sets, bitfieldOptions_t bit);
 bool settingsIsOptionBitSet(bitfieldOptions_t bit);
+
+// How the battery level is shown in the header. Encoded across two option bits
+// (BIT_BATTERY_VOLTAGE_IN_HEADER / BIT_BATTERY_BARS_IN_HEADER) for backwards
+// compatibility: an unset pair reads as PERCENTAGE, matching legacy behaviour.
+typedef enum
+{
+	BATTERY_UNIT_PERCENTAGE = 0,
+	BATTERY_UNIT_VOLTAGE,
+	BATTERY_UNIT_BARS,
+	NUM_BATTERY_UNIT_DISPLAY
+} batteryUnitDisplay_t;
+
+batteryUnitDisplay_t settingsGetBatteryUnitDisplay(void);
+void settingsSetBatteryUnitDisplay(batteryUnitDisplay_t mode);
 
 void settingsSetDirty(void);
 void settingsSetVFODirty(void);

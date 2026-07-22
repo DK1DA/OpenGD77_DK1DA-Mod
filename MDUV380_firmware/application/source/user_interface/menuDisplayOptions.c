@@ -314,15 +314,20 @@ static void updateScreen(bool isFirstRun)
 #if ! defined(PLATFORM_MD9600)
 				case DISPLAY_BATTERY_UNIT_IN_HEADER:
 					leftSide = currentLanguage->battery;
-					if (settingsIsOptionBitSet(BIT_BATTERY_VOLTAGE_IN_HEADER))
+					switch (settingsGetBatteryUnitDisplay())
 					{
-						rightSideUnitsPrompt = PROMPT_VOLTS;
-						rightSideUnitsStr = "V";
-					}
-					else
-					{
-						rightSideUnitsPrompt = PROMPT_PERCENT;
-						rightSideUnitsStr = "%";
+						case BATTERY_UNIT_VOLTAGE:
+							rightSideUnitsPrompt = PROMPT_VOLTS;
+							rightSideUnitsStr = "V";
+							break;
+						case BATTERY_UNIT_BARS:
+							// Plain literal -> rightSideVar (voice-safe), like the Screen Dim entry above.
+							snprintf(rightSideVar, SCREEN_LINE_BUFFER_SIZE, "%s", "Bars");
+							break;
+						default: // BATTERY_UNIT_PERCENTAGE
+							rightSideUnitsPrompt = PROMPT_PERCENT;
+							rightSideUnitsStr = "%";
+							break;
 					}
 					break;
 #endif
@@ -705,9 +710,12 @@ static void handleEvent(uiEvent_t *ev)
 
 #if ! defined(PLATFORM_MD9600)
 				case DISPLAY_BATTERY_UNIT_IN_HEADER:
-					if (settingsIsOptionBitSet(BIT_BATTERY_VOLTAGE_IN_HEADER) == false)
 					{
-						settingsSetOptionBit(BIT_BATTERY_VOLTAGE_IN_HEADER, true);
+						batteryUnitDisplay_t batteryUnit = settingsGetBatteryUnitDisplay();
+						if (batteryUnit < (NUM_BATTERY_UNIT_DISPLAY - 1))
+						{
+							settingsSetBatteryUnitDisplay(batteryUnit + 1);
+						}
 					}
 					break;
 #endif
@@ -928,9 +936,12 @@ static void handleEvent(uiEvent_t *ev)
 
 #if ! defined(PLATFORM_MD9600)
 				case DISPLAY_BATTERY_UNIT_IN_HEADER:
-					if (settingsIsOptionBitSet(BIT_BATTERY_VOLTAGE_IN_HEADER))
 					{
-						settingsSetOptionBit(BIT_BATTERY_VOLTAGE_IN_HEADER, false);
+						batteryUnitDisplay_t batteryUnit = settingsGetBatteryUnitDisplay();
+						if (batteryUnit > BATTERY_UNIT_PERCENTAGE)
+						{
+							settingsSetBatteryUnitDisplay(batteryUnit - 1);
+						}
 					}
 					break;
 #endif
@@ -1182,6 +1193,7 @@ static void exitCallback(void *data)
 #endif
 #if ! defined(PLATFORM_MD9600)
 				BIT_BATTERY_VOLTAGE_IN_HEADER,
+				BIT_BATTERY_BARS_IN_HEADER,
 #endif
 #if defined(HAS_SOFT_VOLUME)
 				BIT_VISUAL_VOLUME,

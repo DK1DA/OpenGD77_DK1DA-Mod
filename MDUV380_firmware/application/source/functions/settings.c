@@ -619,6 +619,27 @@ void settingsSetScreenDimLevel(uint8_t level)
 	settingsSetOptionBit(BIT_SCREEN_DIM_2, ((level & 4) != 0));
 }
 
+// Battery header display mode is stored across two option bits so existing
+// codeplugs (both bits clear) keep reading as BATTERY_UNIT_PERCENTAGE.
+batteryUnitDisplay_t settingsGetBatteryUnitDisplay(void)
+{
+	if (settingsIsOptionBitSet(BIT_BATTERY_BARS_IN_HEADER))
+	{
+		return BATTERY_UNIT_BARS;
+	}
+	if (settingsIsOptionBitSet(BIT_BATTERY_VOLTAGE_IN_HEADER))
+	{
+		return BATTERY_UNIT_VOLTAGE;
+	}
+	return BATTERY_UNIT_PERCENTAGE;
+}
+
+void settingsSetBatteryUnitDisplay(batteryUnitDisplay_t mode)
+{
+	settingsSetOptionBit(BIT_BATTERY_VOLTAGE_IN_HEADER, (mode == BATTERY_UNIT_VOLTAGE));
+	settingsSetOptionBit(BIT_BATTERY_BARS_IN_HEADER, (mode == BATTERY_UNIT_BARS));
+}
+
 void settingsSetDirty(void)
 {
 	settingsDirty = true;
