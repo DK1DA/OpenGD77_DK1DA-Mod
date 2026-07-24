@@ -54,6 +54,9 @@ OpenGD77_DK1DA-Mod keeps OpenGD77's core (DMR/FM, hotspot, CPS compatibility) an
   Channel quick menu, no PC/CPS required (see [Managing channels](#managing-channels-on-the-radio)).
 - **CRT-style shut-off animation** — the current screen collapses to a line and
   then a dot, like an old CRT switching off (replaces the "Power Off" message).
+- **Battery bars display** — a third battery status option alongside % and
+  voltage: a battery-shaped icon with up to four 25 % segments (Display Options →
+  Battery).
 - **DMR reliability fix** — resolves a hard-fault (freeze needing a battery pull)
   on the DMR path that affected recent self-built OpenGD77 revisions.
 

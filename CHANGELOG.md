@@ -9,6 +9,14 @@ single running list until the first versioned release.
 
 _Nothing yet._
 
+## 0.12.0
+
+- **Battery "Bars" display** — a third battery status option in the top status
+  bar alongside **%** and **V**: a battery-shaped icon holding up to **four
+  segments**, each representing **25 %** of charge, with the fill blinking when
+  the battery is low. Cycle the mode with ◀/▶ at **Menu → Options → Display
+  Options → Battery**. The "Bars" menu label is localised (German: *Balken*).
+
 ## 0.11.0
 
 - **CRT-style shut-off animation** — when powering off, the current screen

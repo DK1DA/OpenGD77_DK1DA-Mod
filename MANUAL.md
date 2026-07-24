@@ -59,6 +59,18 @@ Optionally dims the backlight after inactivity to **100 / 50 / 30 / 15 %** of th
 configured brightness (only in **Auto** backlight mode). Any activity restores full
 brightness. Set it in **Menu → Options → Display Options → Screen Dim**.
 
+### Battery display mode — 🟢 [OpenGD77_DK1DA-Mod]
+The battery level in the top status bar can be shown three ways, cycled with
+◀/▶ at **Menu → Options → Display Options → Battery**:
+
+- **%** — remaining charge as a percentage.
+- **V** — the measured battery voltage.
+- **Bars** — a battery-shaped icon with up to **four segments**, each worth
+  **25 %** of charge. The fill blinks when the battery is low.
+
+The **%** and **V** options are inherited from OpenGD77; **Bars** is the new
+addition. In every mode the low-battery warning still blinks the reading.
+
 ### Shut-off animation — 🟢 [OpenGD77_DK1DA-Mod]
 Powering off collapses whatever is on screen towards the middle — squeezed to a
 line, then a dot — like an old CRT switching off, in place of the "Power Off"
