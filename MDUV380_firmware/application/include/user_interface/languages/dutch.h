@@ -345,6 +345,7 @@ const stringsTable_t dutchLanguage =
 .sms_own_id_only				= "Alleen mijn ID", // MaxLen: 16
 .message_from					= "Bericht van", // MaxLen: 16
 .delete_message				= "Bericht wissen?", // MaxLen: 16
+.battery_bars				= "Balken", // MaxLen: 16
 };
 /********************************************************************
  *

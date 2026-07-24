@@ -345,6 +345,7 @@ const stringsTable_t germanLanguage =
 .sms_own_id_only				= "Nur eigene ID", // MaxLen: 16
 .message_from					= "Nachricht von", // MaxLen: 16
 .delete_message				= "Nachricht lösch.", // MaxLen: 16
+.battery_bars				= "Balken", // MaxLen: 16
 };
 /********************************************************************
  *

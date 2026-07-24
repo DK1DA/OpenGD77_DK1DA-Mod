@@ -345,6 +345,7 @@ const stringsTable_t portuguesLanguage =
 .sms_own_id_only				= "Só meu ID", // MaxLen: 16
 .message_from					= "Mensagem de", // MaxLen: 16
 .delete_message				= "Apagar msg?", // MaxLen: 16
+.battery_bars				= "Barras", // MaxLen: 16
 };
 /********************************************************************
  *

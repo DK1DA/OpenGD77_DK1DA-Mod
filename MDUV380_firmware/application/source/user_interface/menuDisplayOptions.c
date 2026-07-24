@@ -321,8 +321,7 @@ static void updateScreen(bool isFirstRun)
 							rightSideUnitsStr = "V";
 							break;
 						case BATTERY_UNIT_BARS:
-							// Plain literal -> rightSideVar (voice-safe), like the Screen Dim entry above.
-							snprintf(rightSideVar, SCREEN_LINE_BUFFER_SIZE, "%s", "Bars");
+							rightSideConst = currentLanguage->battery_bars;
 							break;
 						default: // BATTERY_UNIT_PERCENTAGE
 							rightSideUnitsPrompt = PROMPT_PERCENT;

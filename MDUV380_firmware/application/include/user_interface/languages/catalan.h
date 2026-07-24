@@ -345,6 +345,7 @@ const stringsTable_t catalanLanguage=
 .sms_own_id_only				= "My ID only", // MaxLen: 16
 .message_from					= "Message from", // MaxLen: 16
 .delete_message				= "Delete message?", // MaxLen: 16
+.battery_bars				= "Barres", // MaxLen: 16
 };
 /********************************************************************
  *

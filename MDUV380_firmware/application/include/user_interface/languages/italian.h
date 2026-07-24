@@ -345,6 +345,7 @@ const stringsTable_t italianLanguage =
 .sms_own_id_only				= "Solo mio ID", // MaxLen: 16
 .message_from					= "Messaggio da", // MaxLen: 16
 .delete_message				= "Elimina msg?", // MaxLen: 16
+.battery_bars				= "Barre", // MaxLen: 16
 };
 /********************************************************************
  *

@@ -345,6 +345,7 @@ const stringsTable_t frenchLanguage =
 .sms_own_id_only				= "Mon ID seul", // MaxLen: 16
 .message_from					= "Message de", // MaxLen: 16
 .delete_message				= "Suppr. message?", // MaxLen: 16
+.battery_bars				= "Barres", // MaxLen: 16
 };
 /********************************************************************
  *
