@@ -36,7 +36,7 @@
 #include "interfaces/adc.h"
 #include "interfaces/batteryRAM.h"
 #include "hardware/SPI_Flash.h"
-#include "io/Leds.h"
+#include "io/LEDs.h"
 #include "interfaces/adc.h"
 #include "hardware/radioHardwareInterface.h"
 #include "hardware/HR-C6000.h" // slotState, for restoring the green RX LED after unmute
