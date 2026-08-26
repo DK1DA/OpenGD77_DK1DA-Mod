@@ -57,6 +57,9 @@ OpenGD77_DK1DA-Mod keeps OpenGD77's core (DMR/FM, hotspot, CPS compatibility) an
 - **Battery bars display** — a third battery status option alongside % and
   voltage: a battery-shaped icon with up to four 25 % segments (Display Options →
   Battery).
+- **Power-on indicator** — whenever the backlight is off, the **green LED flashes**
+  for 100 ms every 3 s, so a dark screen never leaves you guessing whether the
+  radio is still on. It pauses while receiving, transmitting or muted.
 - **DMR reliability fix** — resolves a hard-fault (freeze needing a battery pull)
   on the DMR path that affected recent self-built OpenGD77 revisions.
 

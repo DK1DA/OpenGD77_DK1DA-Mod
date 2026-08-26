@@ -99,6 +99,14 @@ fixed. Every element (S-meter, frequencies, menus) follows the selected theme.
 ### Mute indicator — 🟢 [OpenGD77_DK1DA-Mod]
 While muted, the **red LED flashes** (0.5 s every 2 s). See *Mute* below.
 
+### Power-on indicator — 🟢 [OpenGD77_DK1DA-Mod]
+Whenever the backlight is off — any backlight mode where the screen goes dark,
+including **None** — the **green LED flashes** for **100 ms every 3 s**, so a dark
+screen doesn't leave you wondering whether the radio is still on. The flash pauses
+while the LEDs are needed for something else: while receiving, while transmitting,
+and while muted (which flashes the red LED instead). It also follows the CPS
+"disable all LEDs" option.
+
 ---
 
 ## Audio

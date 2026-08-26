@@ -1541,6 +1541,37 @@ void applicationMainTask(void)
 			}
 		}
 
+		// Power-on indicator: when the display doesn't stay lit, flash the GREEN LED for
+		// 100ms every 3s, so it's still obvious the radio is switched on while the screen
+		// is dark. Only while nothing else owns the LEDs: a LED lit by RX/TX already shows
+		// the radio is alive, and muting flashes the RED one.
+		{
+			static bool heartbeatFlashOn = false;
+
+			bool rxGreen = (slotState == DMR_STATE_RX_1) || (slotState == DMR_STATE_RX_2) ||
+					currentRadioDevice->analogSignalReceived || currentRadioDevice->digitalSignalReceived;
+			bool ledsAreFree = (rxGreen == false) && ((trxTransmissionEnabled || trxIsTransmitting) == false) &&
+					(audioAmpIsMuted() == false) && (lastVolume != -99);
+
+			if ((displayIsBacklightLit() == false) && ledsAreFree)
+			{
+				bool flashOn = ((ticksGetMillis() % 3000) < 100);
+
+				if (flashOn != heartbeatFlashOn)
+				{
+					heartbeatFlashOn = flashOn;
+					LedWrite(LED_GREEN, (flashOn ? 1 : 0));
+				}
+			}
+			else if (heartbeatFlashOn)
+			{
+				// The backlight came on, or RX/TX/mute took the LEDs over: end our flash and
+				// restore the green LED to whatever the current RX state requires.
+				heartbeatFlashOn = false;
+				LedWrite(LED_GREEN, (rxGreen ? 1 : 0));
+			}
+		}
+
 		while(ticksGetMillis() < startTime + 1)				// ensure this Task runs at 1ms intervals. Regardless of clock speed.
 		{
 			vTaskDelay(0U);
