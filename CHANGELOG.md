@@ -7,6 +7,10 @@ single running list until the first versioned release.
 
 ## Unreleased
 
+_Nothing yet._
+
+## 0.13.0
+
 - **Power-on indicator** — when the display doesn't stay lit (any backlight mode
   where the screen goes dark, including **None**), the green LED flashes for
   **100 ms every 3 s** so it's obvious the radio is still switched on. The flash
