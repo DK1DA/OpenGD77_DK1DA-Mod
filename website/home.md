@@ -3,8 +3,8 @@
 **OpenGD77_DK1DA-Mod** is a fork of the [OpenGD77](https://opengd77.org) firmware for the
 **TYT MD-UV380 / Retevis RT-3S** and **Baofeng DM-1701 / Retevis RT-84**.
 
-[Latest release :material-download:](https://git.dk1da.de/DK1DA/OpenGD77_DK1DA-Mod/releases){ .md-button .md-button--primary }
-[Source :material-git:](https://git.dk1da.de/DK1DA/OpenGD77_DK1DA-Mod){ .md-button }
+[Latest release :material-download:](https://github.com/DK1DA/OpenGD77_DK1DA-Mod/releases){ .md-button .md-button--primary }
+[Source :material-github:](https://github.com/DK1DA/OpenGD77_DK1DA-Mod){ .md-button }
 
 ## Screenshots
 

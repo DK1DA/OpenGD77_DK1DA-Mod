@@ -6,7 +6,7 @@ site_author: Marcus, DK1DA
 # Override at build time without editing this file:  SITE_URL=https://your.url/ ./build-docs.sh
 site_url: !ENV [SITE_URL, "https://docs.example.com/"]
 repo_name: DK1DA/OpenGD77_DK1DA-Mod
-repo_url: https://git.dk1da.de/DK1DA/OpenGD77_DK1DA-Mod
+repo_url: https://github.com/DK1DA/OpenGD77_DK1DA-Mod
 
 # Source markdown is assembled into _build/docs by build-docs.sh; output goes to _build/site.
 docs_dir: _build/docs

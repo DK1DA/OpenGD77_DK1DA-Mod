@@ -111,7 +111,7 @@ time by the firmware loader. See [`TOOLS.md`](TOOLS.md).
 ## Flashing
 
 Pre-built firmware is attached to each
-[release](https://git.dk1da.de/DK1DA/OpenGD77_DK1DA-Mod/releases): `OpenMDUV380.bin` for the
+[release](https://github.com/DK1DA/OpenGD77_DK1DA-Mod/releases): `OpenMDUV380.bin` for the
 MD-UV380 / RT-3S, `OpenDM1701.bin` for the DM-1701 / RT-84. (Or build your own —
 see below.)
 

@@ -7,7 +7,10 @@ single running list until the first versioned release.
 
 ## Unreleased
 
-_Nothing yet._
+- **Moved to GitHub**
+  (<https://github.com/DK1DA/OpenGD77_DK1DA-Mod>). README / docs links now point
+  there, and the release script is now `scripts/github-release.sh` (uses the
+  GitHub CLI `gh` instead of the Forgejo API).
 
 ## 0.13.0
 
